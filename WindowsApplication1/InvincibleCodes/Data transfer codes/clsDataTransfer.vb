@@ -368,6 +368,8 @@ Public Class clsDataTransfer
                         'if submitted delete source
                         Select Case sourceRow("tablename").ToString.ToLower.Trim
                             Case "dss.residency".ToLower.Trim
+
+
                                 If Me.util.updateResidency( _
                                       sourceRow("recordid").ToString, _
                                       sourceRow("colname"), _
@@ -959,6 +961,7 @@ Public Class clsDataTransfer
             "SpecialStudies.EVP", _
             "SpecialStudies.EVP_Anthropometric", _
             "SpecialStudies.EVPinterviewOutcome", _
+            "SpecialStudies.immunize", _
             "SpecialStudies.SocialGroupSurvey"}
 
     Private Function transfer_specialStudies() As String

@@ -354,6 +354,18 @@ Public Class clsForeignKeyValidation
             village = da.getrecordsCompound("MHRS_SYS.Changes", change).Trim
             Residencyrecords = Nothing
             round = da.getrecordsRound("mhrs_sys.Changes", change).Trim
+
+            'Make sure that changes to loationis are done on the same compound
+            Dim objVal As clsvalidations = clsvalidations.getObject
+
+
+            If objVal.getIDSubstring(change("oldValue").ToString.Trim, idTypes.COMPOUND) <> objVal.getIDSubstring(change("NewValue").ToString.Trim, idTypes.COMPOUND) Then
+                Me.da.saveError(change("transit_id").ToString.Trim, "MHRS_SYS.Changes", "Residency locationid Changes can only be done within the same compound", "", Now(), "", village, round)
+                Me.da.exec_nonqueryInTEMPDB("UPDATE [MHRS_SYS].[Changes] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + change("transit_id").ToString.Trim)
+                returnValue = False
+            End If
+
+
             If change("oldValue").ToString.Trim = change("NewValue").ToString.Trim Then
                 Me.da.saveError(change("transit_id").ToString.Trim, "MHRS_SYS.Changes", "Old value same as new value", "", Now(), "", village, round)
                 Me.da.exec_nonqueryInTEMPDB("UPDATE [MHRS_SYS].[Changes] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + change("transit_id").ToString.Trim)
@@ -395,6 +407,16 @@ Public Class clsForeignKeyValidation
         village = da.getrecordsCompound("MHRS_SYS.Changes", change).Trim
         Residencyrecords = Nothing
         round = da.getrecordsRound("mhrs_sys.Changes", change).Trim
+
+        'Make sure that changes to loationis are done on the same compound
+        Dim objVal As clsvalidations = clsvalidations.getObject
+
+
+        If objVal.getIDSubstring(change("oldValue").ToString.Trim, idTypes.COMPOUND) <> objVal.getIDSubstring(change("NewValue").ToString.Trim, idTypes.COMPOUND) Then
+            Me.da.saveError(change("transit_id").ToString.Trim, "MHRS_SYS.Changes", "Residency locationid Changes can only be done within the same compound", "", Now(), "", village, round)
+            Me.da.exec_nonqueryInTEMPDB("UPDATE [MHRS_SYS].[Changes] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + change("transit_id").ToString.Trim)
+            returnValue = False
+        End If
         If change("oldValue").ToString.Trim = change("NewValue").ToString.Trim Then
             Me.da.saveError(change("transit_id").ToString.Trim, "MHRS_SYS.Changes", "Old value same as new value", "", Now(), "", village, round)
             Me.da.exec_nonqueryInTEMPDB("UPDATE [MHRS_SYS].[Changes] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + change("transit_id").ToString.Trim)
