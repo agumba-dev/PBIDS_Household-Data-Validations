@@ -69,7 +69,7 @@ Public Class clsForeignKeyValidation
                     Me.da.exec_nonqueryInTEMPDB("UPDATE [dss].[marriage] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + tempDataRec("transit_id").ToString.Trim)
                     returnValue = False
                 End If
-                If Me.da.spousetooYounfForMarriage(tempDataRec("spouseid").ToString, 13) Then
+                If (Not tempDataRec("spouseid").ToString.Trim.Equals("")) AndAlso Me.da.spousetooYounfForMarriage(tempDataRec("spouseid").ToString, 13) Then
                     Me.da.saveError(tempDataRec("transit_id").ToString.Trim, "dss.marriage", "Spouse too young for marriage", "", Now(), "", da.getrecordsCompound("dss.marriage", tempDataRec).Trim, da.getrecordsRound("dss.marriage", tempDataRec).Trim())
                     Me.da.exec_nonqueryInTEMPDB("UPDATE [dss].[marriage] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + tempDataRec("transit_id").ToString.Trim)
                     returnValue = False

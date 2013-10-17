@@ -1561,7 +1561,8 @@ Public Class clsDataTransfer
                         Me.da.exec_nonqueryInTEMPDB("UPDATE [dss].[marriage] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + record("transit_id").ToString.Trim)
                         returnVal = False
                     End If
-                    If Me.da.spousetooYounfForMarriage(record("spouseid").ToString, 13) Then
+
+                    If (Not record("spouseid").ToString.Trim.Equals("")) AndAlso Me.da.spousetooYounfForMarriage(record("spouseid").ToString, 13) Then
                         Me.da.saveError(record("transit_id").ToString.Trim, "dss.marriage", "Spouse too young for marriage", "", Now(), "", da.getrecordsCompound("dss.marriage", record).Trim, da.getrecordsRound("dss.marriage", record).Trim())
                         Me.da.exec_nonqueryInTEMPDB("UPDATE [dss].[marriage] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + record("transit_id").ToString.Trim)
                         returnVal = False
@@ -1634,7 +1635,11 @@ Public Class clsDataTransfer
             "SpecialStudies.EVP".ToLower, _
             "specialStudies.EVP_Anthropometric".ToLower, _
             "specialStudies.EVPinterviewOutcome".ToLower, _
-            "specialStudies.FetchWater_Member".ToLower.Trim
+            "specialStudies.FetchWater_Member".ToLower.Trim, _
+             "PBR.ANC".ToLower.Trim, _
+             "PBR.ANC_PLACE".ToLower.Trim, _
+             "PBR.afterdelivery_service".ToLower.Trim, _
+             "PBR.CHILDREN".ToLower.Trim
 
                 Try
 

@@ -10,8 +10,8 @@ Public Class frmValidationMgmt
         Try
             ' Add any initialization after the InitializeComponent() call.
             ' initialiseGlobalVariables()
-            Me.bindCombo(Me.cmb_TableName, Me.da.getTableDataFromTempDB("select table_schema+'.'+table_name from information_schema.tables where table_schema in ('DSS','SpecialStudies','dbo','ghi') order by table_schema+'.'+table_name"))
-            Me.bindCombo(Me.cmb_RefTable, Me.da.getTableDataFromTempDB("select table_schema+'.'+table_name from information_schema.tables where table_schema in ('DSS','SpecialStudies','dbo','ghi') order by table_schema+'.'+table_name"))
+            Me.bindCombo(Me.cmb_TableName, Me.da.getTableDataFromTempDB("select table_schema+'.'+table_name from information_schema.tables where table_schema in ('DSS','SpecialStudies','dbo','ghi','PBR','bh') order by table_schema+'.'+table_name"))
+            Me.bindCombo(Me.cmb_RefTable, Me.da.getTableDataFromTempDB("select table_schema+'.'+table_name from information_schema.tables where table_schema in ('DSS','SpecialStudies','dbo','ghi','PBR','bh') order by table_schema+'.'+table_name"))
 
         Catch ex As Exception
             objRef.strObjMethod = New Diagnostics.StackTrace().ToString()

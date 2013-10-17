@@ -507,7 +507,7 @@ Public Class clsMembership
         Dim socialgroupid As Object = Nothing
         Dim sql As String = "SELECT socialgpid  FROM [DSSHRS].[dbo].[lastmemberships]" _
                             & " where  (individid='" + Membershiprecord("individid").ToString + "') and (lastevent ='TRO') " _
-                            & " and cast(floor(cast([date] as float)) as  datetime)= '" + CDate(Membershiprecord("sdate")).ToString + "'"
+                            & " and cast(floor(cast([date] as float)) as  datetime)= '" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "'"
         socialgroupid = Me.da.getScalar_inMainDB(sql)
         If Not socialgroupid Is Nothing Then
             If socialgroupid.ToString.Trim = Membershiprecord("socialgpid").ToString.Trim Then

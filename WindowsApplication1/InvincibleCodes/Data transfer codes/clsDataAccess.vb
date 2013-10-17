@@ -1319,7 +1319,8 @@ Public Class clsDataAccess
                     "ghi.House_sanitation".ToUpper, _
                     "ghi.pregnancy_and_Birth".ToUpper, _
                     "ghi.Relationships".ToUpper, _
-                    "ghi.vct_hiv".ToUpper
+                    "ghi.vct_hiv".ToUpper, _
+                    "PBR.ANC", "PBR.BIRTH_DELIVERY"
 
                     village = Me.objVal.getIDSubstring(row("locationid").ToString.Trim, idTypes.VILLAGE)
                     compound = Me.objVal.getIDSubstring(row("locationid").ToString.Trim, idTypes.COMPOUND)
@@ -1343,6 +1344,23 @@ Public Class clsDataAccess
 
                 Case "ghi.afterdelivery_service".ToUpper, "ghi.anc_place".ToUpper, "ghi.baby_drink".ToUpper
                     cmd.CommandText = "SELECT max([locationid])FROM [DSSHRS].ghi.allpregnancy_and_Birth where  id='" & row("id").ToString & "' "
+                    village = cmd.ExecuteScalar().ToString
+                    If Not (village Is Nothing OrElse IsDBNull(village) OrElse village = "") Then
+                        compound = Me.objVal.getIDSubstring(village, idTypes.COMPOUND)
+                        village = Me.objVal.getIDSubstring(village, idTypes.VILLAGE)
+                    End If
+
+                Case "pbr.anc_place".ToUpper, "pbr.afterdelivery_service".ToUpper
+                    Dim sqlstr As String
+                    If tableName.ToLower.Equals("pbr.anc_place") Then
+                        sqlstr = "SELECT max([locationid])FROM [DSSHRS].[PBR].[all_ANC] where  id='" & row("id").ToString & "' "
+                    ElseIf tableName.ToLower.Equals("pbr.afterdelivery_service") Then
+                        sqlstr = "SELECT max([locationid])FROM [DSSHRS].[PBR].[all_BirthDelivery] where  id='" & row("id").ToString & "' "
+                    Else
+                        Exit Select
+                    End If
+
+                    cmd.CommandText = sqlstr
                     village = cmd.ExecuteScalar().ToString
                     If Not (village Is Nothing OrElse IsDBNull(village) OrElse village = "") Then
                         compound = Me.objVal.getIDSubstring(village, idTypes.COMPOUND)
@@ -1894,7 +1912,8 @@ Public Class clsDataAccess
                   , "specialstudies.itn", "specialstudies.immunize", "specialstudies.huas_lite", "specialstudies.hsedetails" _
                  , "specialstudies.health", "specialstudies.gpsdata" _
                   , "specialstudies.druguse", "specialstudies.dmicampaign", "specialstudies.contraception" _
-                 , "dss.compadmin", "dss.observation", "dss.socialgroupadmin", "dss.visitation"
+                 , "dss.compadmin", "dss.observation", "dss.socialgroupadmin", "dss.visitation", _
+                    "PBR.ANC".ToLower.Trim, "PBR.BIRTH_DELIVERY".ToLower.Trim
                     round = row("round").ToString.Trim
 
 
@@ -1942,6 +1961,22 @@ Public Class clsDataAccess
 
                 Case "ghi.afterdelivery_service".ToLower.Trim, "ghi.anc_place".ToLower.Trim, "ghi.baby_drink".ToLower.Trim
                     cmd.CommandText = "SELECT max([round])FROM [DSSHRS].ghi.allpregnancy_and_Birth where  id='" & row("id").ToString & "' "
+                    i = cmd.ExecuteScalar().ToString
+                    If i Is Nothing Then
+                        round = ""
+                    Else
+                        round = i
+                    End If
+                Case "pbr.anc_place".ToLower, "pbr.afterdelivery_service".ToLower
+                    Dim sqlstr As String
+                    If tableName.ToLower.Equals("pbr.anc_place") Then
+                        sqlstr = "SELECT max([round])FROM [DSSHRS].[PBR].[all_ANC] where  id='" & row("id").ToString & "' "
+                    ElseIf tableName.ToLower.Equals("pbr.afterdelivery_service") Then
+                        sqlstr = "SELECT max([locationid])FROM [DSSHRS].[PBR].[all_BirthDelivery] where  id='" & row("id").ToString & "' "
+                    Else
+                        Exit Select
+                    End If
+                    cmd.CommandText = sqlstr
                     i = cmd.ExecuteScalar().ToString
                     If i Is Nothing Then
                         round = ""
@@ -2094,6 +2129,7 @@ Public Class clsDataAccess
 #Region "other validations"
     Public Function Individualtable(ByVal Record As DataRow, ByVal tablename As String) As Boolean
         If Me.hasSmallAgediffwithfather(Record, 13) Then
+
             Me.saveError(Record("transit_id").ToString.Trim, tablename, "The father is too young", "", Now(), "", "Q", "Q")
             Me.exec_nonqueryInTEMPDB("UPDATE [dss].[individual] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + Record("transit_id").ToString.Trim)
         End If
@@ -2107,6 +2143,10 @@ Public Class clsDataAccess
     End Function
     Public Function hasSmallAgediffwithfather(ByVal indrec As DataRow, ByVal agediff As Integer) As Boolean
         Dim returnValue As Boolean = True
+        If indrec("fatherid").ToString.Trim.Equals("UNK") Then
+            returnValue = False
+            GoTo ExitPoint
+        End If
         Dim sql As String = "SELECT COUNT(*) FROM [DSSHRS].[dbo].[getIndividual_Fatheragediff2] (@minageDiffFilter,@newchilddob,@newfatherid) " _
                             & " where individid =@individid"
 
@@ -2132,6 +2172,7 @@ Public Class clsDataAccess
             returnValue = True
         End Try
         clsGlobalVariable.close_HRS_Main_DBCon()
+ExitPoint:
         Return returnValue
     End Function
 
@@ -2160,6 +2201,10 @@ Public Class clsDataAccess
 
     Public Function hasSmallAgediffwithMother(ByVal indrec As DataRow, ByVal agediff As Integer) As Boolean
         Dim returnValue As Boolean = True
+        If indrec("motherid").ToString.Trim.Equals("UNK") Then
+            returnValue = False
+            GoTo ExitPoint
+        End If
         Dim sql As String = "SELECT COUNT(*) FROM [DSSHRS].[dbo].[getIndividual_motheragediff2] (@minageDiffFilter,@newchilddob,@newmotherid) " _
                             & " where individid =@individid"
 
@@ -2185,6 +2230,7 @@ Public Class clsDataAccess
             returnValue = True
         End Try
         clsGlobalVariable.close_HRS_Main_DBCon()
+ExitPoint:
         Return returnValue
     End Function
     'Public Function hasSmallAgediffwithMother(ByVal individid As String, ByVal agediff As Integer) As Boolean
