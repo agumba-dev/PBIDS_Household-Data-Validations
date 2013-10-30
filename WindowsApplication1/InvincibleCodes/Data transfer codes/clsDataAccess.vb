@@ -2247,7 +2247,7 @@ ExitPoint:
     Public Function individualtooYounfForMarriage(ByVal individid As String, ByVal agediff As Integer) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT COUNT(*) FROM [TEMP_DSSHRS].[dbo].[marriedpersonsages] ()  " _
-                            & " where individid ='" + individid.Trim + "' and ( indi_visitationage<=" + agediff.ToString + ") "
+                            & " where individid ='" + individid.Trim + "' and ( indi_visitationage<" + agediff.ToString + ") "
         If Me.executeScalar_INMainDB(sql) > 0 Then
             returnValue = True
         Else
@@ -2258,7 +2258,7 @@ ExitPoint:
     Public Function spousetooYounfForMarriage(ByVal individid As String, ByVal agediff As Integer) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT COUNT(*) FROM [TEMP_DSSHRS].[dbo].[marriedpersonsages] ()  " _
-                            & " where spouseid ='" + individid.Trim + "' and ( spouse_visitationage<=" + agediff.ToString + ") "
+                            & " where spouseid ='" + individid.Trim + "' and ( spouse_visitationage<" + agediff.ToString + ") "
         If Me.executeScalar_INMainDB(sql) > 0 Then
             returnValue = True
         Else
