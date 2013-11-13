@@ -1320,7 +1320,8 @@ Public Class clsDataAccess
                     "ghi.pregnancy_and_Birth".ToUpper, _
                     "ghi.Relationships".ToUpper, _
                     "ghi.vct_hiv".ToUpper, _
-                    "PBR.ANC", "PBR.BIRTH_DELIVERY"
+                    "PBR.ANC", "PBR.BIRTH_DELIVERY", _
+                    "bh.BirthHistory".ToUpper
 
                     village = Me.objVal.getIDSubstring(row("locationid").ToString.Trim, idTypes.VILLAGE)
                     compound = Me.objVal.getIDSubstring(row("locationid").ToString.Trim, idTypes.COMPOUND)
@@ -1350,12 +1351,14 @@ Public Class clsDataAccess
                         village = Me.objVal.getIDSubstring(village, idTypes.VILLAGE)
                     End If
 
-                Case "pbr.anc_place".ToUpper, "pbr.afterdelivery_service".ToUpper
+                Case "pbr.anc_place".ToUpper, "pbr.afterdelivery_service".ToUpper, "bh.Children".ToUpper
                     Dim sqlstr As String
                     If tableName.ToLower.Equals("pbr.anc_place") Then
                         sqlstr = "SELECT max([locationid])FROM [DSSHRS].[PBR].[all_ANC] where  id='" & row("id").ToString & "' "
                     ElseIf tableName.ToLower.Equals("pbr.afterdelivery_service") Then
                         sqlstr = "SELECT max([locationid])FROM [DSSHRS].[PBR].[all_BirthDelivery] where  id='" & row("id").ToString & "' "
+                    ElseIf tableName.ToLower.Equals("bh.children") Then
+                        sqlstr = "SELECT max([locationid])FROM [DSSHRS].[BH].[all_BirthHistory] where  id='" & row("id").ToString & "' "
                     Else
                         Exit Select
                     End If
@@ -1937,7 +1940,8 @@ Public Class clsDataAccess
                     "ghi.pregnancy_and_Birth".ToLower.Trim, _
                     "ghi.Relationships".ToLower.Trim, _
                     "ghi.vct_hiv".ToLower.Trim, _
-                    "Specialstudies.waterAccess".ToLower
+                    "Specialstudies.waterAccess".ToLower, _
+                    "bh.BirthHistory".ToLower.Trim, "bh.Children".ToLower.Trim
 
                     round = row("round").ToString
 
@@ -2095,7 +2099,8 @@ Public Class clsDataAccess
                     End Try
                 Case "Radio.prevention_practice".ToLower
                     round = "20123"
-                
+
+
             End Select
         Catch ex As Exception
             objRef.strObjMethod = New Diagnostics.StackTrace().ToString()

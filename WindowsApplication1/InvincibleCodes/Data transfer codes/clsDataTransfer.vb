@@ -962,7 +962,14 @@ Public Class clsDataTransfer
             "SpecialStudies.EVP_Anthropometric", _
             "SpecialStudies.EVPinterviewOutcome", _
             "SpecialStudies.immunize", _
-            "SpecialStudies.SocialGroupSurvey"}
+            "SpecialStudies.SocialGroupSurvey", _
+            "BH.BIRTHHISTORY", _
+            "BH.CHILDREN", _
+            "PBR.ANC", _
+            "PBR.Birth_Delivery", _
+            "PBR.afterdelivery_service", _
+            "PBR.anc", _
+            "PBR.anc_place"}
 
     Private Function transfer_specialStudies() As String
         Dim str As String = vbCrLf
