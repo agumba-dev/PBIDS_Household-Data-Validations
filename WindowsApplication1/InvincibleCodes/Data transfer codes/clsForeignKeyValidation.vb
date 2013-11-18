@@ -359,7 +359,7 @@ Public Class clsForeignKeyValidation
             Dim objVal As clsvalidations = clsvalidations.getObject
 
 
-            If objVal.getIDSubstring(change("oldValue").ToString.Trim, idTypes.COMPOUND) <> objVal.getIDSubstring(change("NewValue").ToString.Trim, idTypes.COMPOUND) Then
+            If change("colname").ToString.ToLower.Trim.Equals("locationid") And objVal.getIDSubstring(change("oldValue").ToString.Trim, idTypes.COMPOUND) <> objVal.getIDSubstring(change("NewValue").ToString.Trim, idTypes.COMPOUND) Then
                 Me.da.saveError(change("transit_id").ToString.Trim, "MHRS_SYS.Changes", "Residency locationid Changes can only be done within the same compound", "", Now(), "", village, round)
                 Me.da.exec_nonqueryInTEMPDB("UPDATE [MHRS_SYS].[Changes] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + change("transit_id").ToString.Trim)
                 returnValue = False
@@ -412,7 +412,7 @@ Public Class clsForeignKeyValidation
         Dim objVal As clsvalidations = clsvalidations.getObject
 
 
-        If objVal.getIDSubstring(change("oldValue").ToString.Trim, idTypes.COMPOUND) <> objVal.getIDSubstring(change("NewValue").ToString.Trim, idTypes.COMPOUND) Then
+        If change("colname").ToString.ToLower.Trim.Equals("locationid") And objVal.getIDSubstring(change("oldValue").ToString.Trim, idTypes.COMPOUND) <> objVal.getIDSubstring(change("NewValue").ToString.Trim, idTypes.COMPOUND) Then
             Me.da.saveError(change("transit_id").ToString.Trim, "MHRS_SYS.Changes", "Residency locationid Changes can only be done within the same compound", "", Now(), "", village, round)
             Me.da.exec_nonqueryInTEMPDB("UPDATE [MHRS_SYS].[Changes] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + change("transit_id").ToString.Trim)
             returnValue = False
