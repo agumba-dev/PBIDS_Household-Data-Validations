@@ -324,8 +324,8 @@ Public Class clsResidency
                     End If
                     'check for four calender month rule
                     If Not Me.meetsFourCalenderMonthsRule(Residencyrecord) Then
-                        '' Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Individual has no open episode in location", "", Now(), "")
-                        '' hasError = True
+                        Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Individual has not met the 4 calendar Month", "", Now(), "", village, round)
+                        hasError = True
                     End If
                 Else
                     Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Individual has no open episode in location", "", Now(), "", village, round)
