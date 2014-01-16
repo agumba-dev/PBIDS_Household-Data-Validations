@@ -7,7 +7,7 @@ Public Class clsPregnancy
     Private startEvents As String() = {"PRX", "ENT", "ENU", "PRN"}
     'Private endEvents As String() = {"EXT", "TRO", "DTH", "MULLBR", "LBRSTB", "SINLBR", "MULSTB", "SINSTB", "MISCAR"}
     Private endEvents As String() = {"EXT", "TRO", "DTH", "MULLBR", "LBRSTB", "SINLBR", "MULSTB", "SINSTB", "MISCAR", "BIR" _
-     , "BIR", "CEN", "EXT", "PRO", "DTH", "NOTAPP", "NAP", "DTH/EX", "SINSTB", "SINLBR", "LBR", "MISCAR", "TRO", "MULSTB", "MULLBR", "SABORT"}
+     , "BIR", "CEN", "EXT", "PRO", "DTH", "NOTAPP", "NAP", "DTH/EX", "SINSTB", "SINLBR", "LBR", "MISCAR", "TRO", "MULSTB", "MULLBR", "SABORT", "IABORT"}
 
     Private Sub New()
 
