@@ -265,10 +265,10 @@ Public Class clsDsshrs_Membership_Val
                 hasError = True
             End If
             'check for four calender month rule
-            'If Not Me.meetsFourCalenderMonthsRule(Membershiprecord) Then
-            '    '' Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Individual has no open episode in location", "", Now(), "")
-            '    '' hasError = True
-            'End If
+            If Not Me.meetsFourCalenderMonthsRule(Membershiprecord) Then
+                'Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "Individual has no open episode in location", "", Now(), "", village, round)
+                'hasError = True
+            End If
         
 
             ' perform event specific validations
@@ -309,11 +309,11 @@ Public Class clsDsshrs_Membership_Val
                     & "WHERE     (sdate IS NOT NULL) AND cast(floor(cast(sdate as float)) as datetime)='" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "' " _
                     & "AND (individid = '" + Membershiprecord("individid").ToString.Trim + "') AND  " _
                     & "(memberShipID <> '" + Membershiprecord("memberShipID").ToString + "')  AND sfieldworker <> 'PROG' and  efieldworker <> 'PROG' "
-                sql = "SELECT * FROM [DSSHRS].[DSS].[getMembershipRecordWithoutProg] (  " & _
-                "" + Membershiprecord("memberShipID").ToString + "" & _
+                sql = "SELECT * FROM [DSSHRS].[DSS].[getMembershipRecordWithoutProg] (  '" & _
+                "" + Membershiprecord("memberShipID").ToString + "'" & _
                 "  ,'" + Membershiprecord("individid").ToString.Trim + "'  " & _
                 "  ,'" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "'  " & _
-                "  ,2)  "
+                "  ,1)  "
 
 
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
@@ -335,7 +335,7 @@ Public Class clsDsshrs_Membership_Val
                "'" + Membershiprecord("memberShipID").ToString + "'" & _
                "  ,'" + Membershiprecord("individid").ToString.Trim + "'  " & _
                "  ,'" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "'  " & _
-               "  ,1)  "
+               "  ,2)  "
 
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
                     returnValue = True
