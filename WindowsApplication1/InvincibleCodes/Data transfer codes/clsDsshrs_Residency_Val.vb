@@ -219,8 +219,10 @@ Public Class clsDsshrs_Residency_Val
             End If
             ''check for four calender month rule
             If Not Me.meetsFourCalenderMonthsRule(Residencyrecord) Then
-                Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has not met the 4 calendar Month", "", Now(), "", village, round)
-                hasError = True
+                If Not ((Residencyrecord("seventtype").ToString.ToUpper.Trim = "BIR") And (Residencyrecord("eeventtype").ToString.ToUpper.Trim = "DTH")) Then
+                    Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has not met the 4 calendar Month", "", Now(), "", village, round)
+                    hasError = True
+                End If
             End If
             'Else
             '    Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has no open episode in location", "", Now(), "", village, round)
