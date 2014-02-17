@@ -522,6 +522,37 @@ Public Class clsResidency
             Return False
         End If
     End Function
+
+    ''' <summary>
+    ''' Checks the four calendar month rule using the dates available
+    ''' </summary>
+    ''' <param name="Residencyrecord"></param>
+    ''' <returns></returns>
+    ''' <remarks></remarks>
+    Private Function meetsFourCalenderMonthsRuleUsingvisitation(ByVal Residencyrecord As DataRow) As Boolean
+        Dim etype As Int16
+        Select Case (IsDBNull(Residencyrecord("eeventtype")) Or IsDBNull(Residencyrecord("edate")) Or IsDBNull(Residencyrecord("eobserveid")))
+            Case True
+                etype = 2
+            Case False
+                etype = 1
+        End Select
+        Dim sql As String = "DSSHRS.[DSS].[Res_meetsfourCalendarMonth]  '" + Residencyrecord("individid").ToString + "' ,'" + Residencyrecord("ResidencyID").ToString + "'," + etype.ToString
+        Dim lastdate As Int16
+        Try
+            lastdate = Me.da.getScalar_inMainDB(sql)
+        Catch ex As Exception
+
+        End Try
+
+
+        If lastdate = 1 Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
     Private Function hasDuplicatesINTemp(ByVal Residencyrecord As DataRow) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT count(*)  FROM [TEMP_DSSHRS].[DSS].[residency]" _

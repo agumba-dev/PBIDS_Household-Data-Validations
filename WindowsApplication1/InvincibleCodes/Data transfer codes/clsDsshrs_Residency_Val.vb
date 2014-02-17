@@ -218,11 +218,9 @@ Public Class clsDsshrs_Residency_Val
                 hasError = True
             End If
             ''check for four calender month rule
-            If Not Me.meetsFourCalenderMonthsRule(Residencyrecord) Then
-                If Not ((Residencyrecord("seventtype").ToString.ToUpper.Trim = "BIR") And (Residencyrecord("eeventtype").ToString.ToUpper.Trim = "DTH")) Then
-                    Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has not met the 4 calendar Month", "", Now(), "", village, round)
-                    hasError = True
-                End If
+            If Not Me.meetsFourCalenderMonthsRuleUsingvisitation(Residencyrecord) Then
+                Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has not met the 4 calendar Month", "", Now(), "", village, round)
+                hasError = True
             End If
             'Else
             '    Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has no open episode in location", "", Now(), "", village, round)
@@ -374,6 +372,31 @@ Public Class clsDsshrs_Residency_Val
         Else
             Return False
         End If
+    End Function
+
+    Private Function meetsFourCalenderMonthsRuleUsingvisitation(ByVal Residencyrecord As DataRow) As Boolean
+        Dim etype As Int16
+        Select Case (IsDBNull(Residencyrecord("eeventtype")) Or IsDBNull(Residencyrecord("edate")) Or IsDBNull(Residencyrecord("eobserveid")))
+            Case True
+                etype = 2
+            Case False
+                etype = 1
+        End Select
+        Dim sql As String = "[DSS].[Res_meetsfourCalendarMonth]  '" + Residencyrecord("individid").ToString + "' ,'" + Residencyrecord("ResidencyID").ToString + "'," + etype.ToString
+        Dim lastdate As Int16
+        Try
+            lastdate = Me.da.getScalar_inMainDB(sql)
+        Catch ex As Exception
+
+        End Try
+
+
+        If lastdate = 1 Then
+            Return True
+        Else
+            Return False
+        End If
+       
     End Function
 #End Region
 
