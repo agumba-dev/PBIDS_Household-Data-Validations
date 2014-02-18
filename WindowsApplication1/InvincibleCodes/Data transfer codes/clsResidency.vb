@@ -323,12 +323,12 @@ Public Class clsResidency
                         hasError = True
                     End If
                     'check for four calender month rule
-                    If Not Me.meetsFourCalenderMonthsRule(Residencyrecord) Then
+                    If Not Me.meetsFourCalenderMonthsRuleUsingvisitation(Residencyrecord) Then
 
-                        If Not ((Residencyrecord("seventtype").ToString.ToUpper.Trim = "BIR") And (Residencyrecord("eeventtype").ToString.ToUpper.Trim = "DTH")) Then
-                            Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Individual has not met the 4 calendar Month", "", Now(), "", village, round)
-                            hasError = True
-                        End If
+                        ' If Not ((Residencyrecord("seventtype").ToString.ToUpper.Trim = "BIR") And (Residencyrecord("eeventtype").ToString.ToUpper.Trim = "DTH")) Then
+                        Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Individual has not met the 4 calendar Month", "", Now(), "", village, round)
+                        hasError = True
+                        'End If
 
                     End If
                 Else
