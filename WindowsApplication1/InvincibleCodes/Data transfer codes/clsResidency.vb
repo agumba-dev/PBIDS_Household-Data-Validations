@@ -537,7 +537,23 @@ Public Class clsResidency
             Case False
                 etype = 1
         End Select
-        Dim sql As String = "DSSHRS.[DSS].[Res_meetsfourCalendarMonth]  '" + Residencyrecord("individid").ToString + "' ,'" + Residencyrecord("ResidencyID").ToString + "'," + etype.ToString
+
+
+        Dim individid As String = Residencyrecord("individid")
+        Dim guid As String = Residencyrecord("ResidencyID").ToString
+        Dim locationid As String = Residencyrecord("locationid")
+        Dim sevent As String = Residencyrecord("seventtype")
+        Dim sdate As Date = Residencyrecord("sdate")
+        Dim sobserve As String = Residencyrecord("sobserveid")
+        Dim edate As Date = IIf(IsDBNull(Residencyrecord("edate")), Nothing, CDate(Residencyrecord("edate")))
+        Dim eevent As String = IIf(IsDBNull(Residencyrecord("eeventtype")), String.Empty, Residencyrecord("eeventtype"))
+        Dim eobserve As String = IIf(IsDBNull(Residencyrecord("eobserveid")), String.Empty, Residencyrecord("eobserveid"))
+
+        Dim sql As String = "dsshrs.[DSS].[Res_meetsfourCalendarMonth2]  '" + individid + "','" + guid + "','" + locationid + "','" + sevent + "','" + sdate + "','" + _
+            sobserve + "','" + edate + "','" + eevent + "','" + eobserve + "'," + etype.ToString
+
+
+        'Dim sql As String = "DSSHRS.[DSS].[Res_meetsfourCalendarMonth]  '" + Residencyrecord("individid").ToString + "' ,'" + Residencyrecord("ResidencyID").ToString + "'," + etype.ToString
         Dim lastdate As Int16
         Try
             lastdate = Me.da.getScalar_inMainDB(sql)
