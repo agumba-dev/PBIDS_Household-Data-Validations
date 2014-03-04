@@ -2271,6 +2271,22 @@ ExitPoint:
         End If
         Return returnValue
     End Function
+    Public Function CheckSexforSpouse(individid As String, episodeid As String) As Boolean
+        Dim returnValue As Boolean = True
+        Dim sql As String = "SELECT     marr.individid, marr.episodeid, marrindi.gender, spouse.individid AS spouseid, spouse.gender AS spousegender, marr.observeid " & _
+"FROM         DSS.marriage AS marr INNER JOIN " & _
+"                       DSSHRS.[dbo].[vCombinedIndividuals] AS marrindi ON marr.individid = marrindi.individid LEFT OUTER JOIN " & _
+"                       DSSHRS.[dbo].[vCombinedIndividuals] AS spouse ON marr.spouseid = spouse.individid " & _
+"WHERE     ((ISNULL(spouse.gender, '') = marrindi.gender) OR  " & _
+"                      (marr.individid = marr.spouseid)) and marr.individid ='" & individid.Trim & "' and marr.episodeid='" & episodeid.Trim & "'  "
+        If Me.executeScalar_INMainDB(sql) > 0 Then
+            returnValue = True
+        Else
+            returnValue = False
+        End If
+        Return returnValue
+    End Function
+
     Public Function has_closePregnacy_Outcome(ByVal individid As String, ByVal outcomedate As Date) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT COUNT(*) FROM [DSSHRS].[DSS].[pregoutcome]  " _
@@ -2294,5 +2310,7 @@ ExitPoint:
         Return returnValue
     End Function
 #End Region
+
+   
 
 End Class

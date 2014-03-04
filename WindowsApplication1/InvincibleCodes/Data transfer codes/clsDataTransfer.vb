@@ -1569,6 +1569,13 @@ Public Class clsDataTransfer
                         returnVal = False
                     End If
 
+                    'Ensure that the opposite gender 
+                    If Me.da.CheckSexforSpouse(record("individid").ToString, record("episodeid").ToString) Then
+                        Me.da.saveError(record("transit_id").ToString.Trim, "dss.marriage", "Marriage to same sex not allowed", "", Now(), "", da.getrecordsCompound("dss.marriage", record).Trim, da.getrecordsRound("dss.marriage", record).Trim())
+                        Me.da.exec_nonqueryInTEMPDB("UPDATE [dss].[marriage] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + record("transit_id").ToString.Trim)
+                        returnVal = False
+                    End If
+
                     If (Not record("spouseid").ToString.Trim.Equals("")) AndAlso Me.da.spousetooYounfForMarriage(record("spouseid").ToString, 13) Then
                         Me.da.saveError(record("transit_id").ToString.Trim, "dss.marriage", "Spouse too young for marriage", "", Now(), "", da.getrecordsCompound("dss.marriage", record).Trim, da.getrecordsRound("dss.marriage", record).Trim())
                         Me.da.exec_nonqueryInTEMPDB("UPDATE [dss].[marriage] SET [errflag] = 'true' , errdate=getdate() where transit_id=" + record("transit_id").ToString.Trim)
