@@ -334,7 +334,7 @@ Public Class clsDsshrs_Membership_Val
                 sql = "SELECT * FROM [DSSHRS].[DSS].[getMembershipRecordWithoutProg] (  " & _
                "'" + Membershiprecord("memberShipID").ToString + "'" & _
                "  ,'" + Membershiprecord("individid").ToString.Trim + "'  " & _
-               "  ,'" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "'  " & _
+               "  ,'" + CDate(Membershiprecord("edate")).ToString("dd-MMM-yyyy") + "'  " & _
                "  ,2)  "
 
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
