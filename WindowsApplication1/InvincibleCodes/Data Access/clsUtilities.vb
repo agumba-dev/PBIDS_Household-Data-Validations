@@ -25,7 +25,7 @@ Public Class clsUtilities
 #Region "Variable Declaration"
     Public objRef As clsformrefrences = clsformrefrences.getObject
     Public objVal As clsvalidations = clsvalidations.getObject
-    Public authorizedUsers As String() = {"echiteri", "engulukyo", "devengulukyo", "bakeyo", "devbakeyo", "devlomare", "lomare", "devechiteri", "hogollah", "devhogollah"}
+    Public authorizedUsers As String() = {"engulukyo", "devengulukyo", "deveongodo", "eongodo", "devcchelangat", "cchelangat", "hogollah", "devhogollah"}
     Private Shared objSingle As clsUtilities
     Private Shared blCreated As Boolean
 #End Region

@@ -386,7 +386,7 @@ Public Class clsMembership
             Case "i", "di", "ti"
                 sql = "SELECT count(*) FROM [DSSHRS].[DSS].[membership] " _
                     & " where (sdate is not null) and cast(floor(cast([sate] as float)) as  datetime)= '" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "' " _
-                    & "  and (individid='" + Membershiprecord("individid").ToString.Trim + "')"
+                    & "  and (individid='" + Membershiprecord("individid").ToString.Trim + "')  and seventtype <>'bir'"
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
                     returnValue = True
                 Else
@@ -395,7 +395,7 @@ Public Class clsMembership
             Case "u", "du", "tu"
                 sql = "SELECT count(*)  FROM [DSSHRS].[DSS].[membership] " _
                     & " where (edate is not null)  and cast(floor(cast([edate] as float)) as  datetime)= '" + CDate(Membershiprecord("edate")).ToString("dd-MMM-yyyy") + "' " _
-                    & " and (individid='" + Membershiprecord("individid").ToString.Trim + "')"
+                    & " and (individid='" + Membershiprecord("individid").ToString.Trim + "')  and seventtype <>'bir'"
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
                     returnValue = True
                 Else

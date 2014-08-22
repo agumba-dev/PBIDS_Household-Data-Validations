@@ -47,11 +47,16 @@ Public Class clsTablesUpdateUtils
             cmd.Parameters.AddWithValue("@" + row("Column_name").ToString, row("value"))
         Next
         'cmd.Prepare()
-        If cmd.ExecuteNonQuery() > 0 Then
-            Return True
-        Else
+        Try
+            If cmd.ExecuteNonQuery() > 0 Then
+                Return True
+            Else
+                Return False
+            End If
+        Catch ex As Exception
             Return False
-        End If
+        End Try
+
         'Catch ex As Exception
         '    MsgBox(ex.Message)
         '    Return False

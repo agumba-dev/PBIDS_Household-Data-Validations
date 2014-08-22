@@ -366,8 +366,7 @@ Public Class clsResidency
         Select Case Residencyrecord("rec_status").ToString.ToLower.Trim
             Case "i", "di", "ti"
                 sql = "SELECT count(*) FROM [DSSHRS].[DSS].[residency] " _
-                    & " where (sdate is not null) and (year([sdate])=" + CDate(Residencyrecord("sdate")).Year.ToString + ") and (month(sdate)=" + CDate(Residencyrecord("sdate")).Month.ToString + ") " _
-                    & " and (day(sdate)=" + CDate(Residencyrecord("sdate")).Day.ToString + ") and (individid='" + Residencyrecord("individid").ToString.Trim + "')"
+                    & " where (sdate is not null) and (cast(floor(cast(sdate as float)) as datetime)='" + CDate(Residencyrecord("sdate")).ToString("dd-MMM-yyyy") + "') and (individid='" + Residencyrecord("individid").ToString.Trim + "') and seventtype <>'bir'"
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
                     returnValue = True
                 Else
@@ -375,9 +374,7 @@ Public Class clsResidency
                 End If
             Case "u", "du", "tu"
                 sql = "SELECT count(*)  FROM [DSSHRS].[DSS].[residency] " _
-                    & " where (edate is not null) and (year([edate])=" + CDate(Residencyrecord("edate")).Year.ToString + ") and " _
-                    & "(month(edate)=" + CDate(Residencyrecord("edate")).Month.ToString + ") " _
-                    & " and (day(edate)=" + CDate(Residencyrecord("edate")).Day.ToString + ") and (individid='" + Residencyrecord("individid").ToString.Trim + "')"
+                    & " where (edate is not null) and (cast(floor(cast(sdate as float)) as datetime)='" + CDate(Residencyrecord("sdate")).ToString("dd-MMM-yyyy") + "') and (individid='" + Residencyrecord("individid").ToString.Trim + "')  and seventtype <>'bir'"
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
                     returnValue = True
                 Else

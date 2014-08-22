@@ -84,14 +84,18 @@ Public Class clsDataTransfer
                         Me.da.saveError(sourceRow("transit_id").ToString, "DSS.individual", "individidid  " + sourceRow("individid").ToString + "  is invalid id", "", Now(), "", da.getrecordsCompound("dss.individual", sourceRow).Trim, da.getrecordsRound("dss.individual", sourceRow).Trim())
                         Me.da.exec_nonqueryInTEMPDB("UPDATE DSS.individual SET [errflag] = 'true' , errdate=getdate() where transit_id =" + sourceRow("transit_id").ToString)
                     Else
+                        'Try
                         If Me.util.newIndividual(sourceRow) Then
                             If Me.util.DeleteSpecialStudRecord(sourceRow("transit_id"), "DSS.individual", Me.util.currentTransaction) Then
-                                ' If Me.util.generic_delete(sourceRow, SourceTable, "[DSS].[individual]", Me.util.currentTransaction) Then
-                                'MsgBox("delete")
+
                             Else
-                                MsgBox("no delet")
+
                             End If
                         End If
+                        'Catch ex As Exception
+
+                        'End Try
+
                     End If
 
 
@@ -969,7 +973,8 @@ Public Class clsDataTransfer
             "PBR.Birth_Delivery", _
             "PBR.afterdelivery_service", _
             "PBR.anc", _
-            "PBR.anc_place"}
+            "PBR.anc_place", _
+            "radio.prevention_practice", "radio.listening","radio.influenza"}
 
     Private Function transfer_specialStudies() As String
         Dim str As String = vbCrLf
@@ -1312,7 +1317,7 @@ Public Class clsDataTransfer
         'Static objects
         worker.ReportProgress(Nothing, "starting validating and uploading DSS.individual " & " " & Now.ToString())
         returnVal = returnVal & vbCrLf & Me.foreignKeys.ValidateforeignKey_Table_inTEMP_DSSHRS("DSS.individual", "not(rec_status like '%x%')")
-        returnVal = returnVal & vbCrLf & Me.transfer_Individual(clsGlobalVariable.HRS_Temp_DBCon, clsGlobalVariable.HRS_Main_DBCon, "SELECT * FROM [TEMP_DSSHRS].[DSS].[individual]where [errflag]=0 and  not(rec_status like '%x%')")
+        returnVal = returnVal & vbCrLf & Me.transfer_Individual(clsGlobalVariable.HRS_Temp_DBCon, clsGlobalVariable.HRS_Main_DBCon, "SELECT * FROM [TEMP_DSSHRS].[DSS].[individual]where [errflag]=0 and  not(rec_status like '%x%') order by motherid, fatherid")
         worker.ReportProgress(Nothing, " finished validating and uploading DSS.individual " & " " & Now.ToString())
 
         worker.ReportProgress(Nothing, " starting  validating and uploading DSS.compounds " & " " & Now.ToString())
