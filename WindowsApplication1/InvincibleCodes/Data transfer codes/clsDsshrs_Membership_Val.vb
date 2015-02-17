@@ -186,6 +186,11 @@ Public Class clsDsshrs_Membership_Val
                         hasError = True
                     End If
 
+                    If Me.endEventDateExists(Membershiprecord) Then
+                        Me.da.saveError(Membershiprecord("memberShipID").ToString.Trim, tablename, "the previous end event date is similar to current sdate ", "", Now(), "", village, round)
+                        hasError = True
+                    End If
+
                     ' End If
                     'Else
 
@@ -347,6 +352,32 @@ Public Class clsDsshrs_Membership_Val
         End Select
         Return returnValue
     End Function
+
+
+    Private Function endEventDateExists(ByVal Membershiprecord As DataRow) As Boolean
+        Dim returnValue As Boolean = True
+        Dim sql As String = ""
+        
+
+        'Emmanuel Added this change
+        'Due to the socialgroup enumaration, the end event with efieldworker as PROG have the same sdate this flags an error
+        'I added a check to ignore all records whose end event is not equal to PROG
+        sql = "SELECT count(*) FROM [DSSHRS].[DSS].[getMembershipEndRecordWithoutProg] (  '" & _
+        "" + Membershiprecord("memberShipID").ToString + "'" & _
+        "  ,'" + Membershiprecord("individid").ToString.Trim + "'  " & _
+        "  ,'" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "'  " & _
+        "  ,1)  "
+
+        If Me.da.executeScalar_INMainDB(sql) > 0 Then
+            returnValue = True
+        Else
+            returnValue = False
+        End If
+
+        Return returnValue
+    End Function
+
+
     Private Function hadDied(ByVal Membershiprecord As DataRow) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT count(*)  FROM [DSSHRS].[DSS].[membership]" _

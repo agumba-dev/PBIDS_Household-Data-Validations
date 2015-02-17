@@ -268,6 +268,10 @@ Public Class clsResidency
                                 Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Individual has another open episode", "", Now(), "", village, round)
                                 hasError = True
                             End If
+                            If Me.endEventDateExists(Residencyrecord) Then
+                                Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "the previous end event date is similar to current sdate ", "", Now(), "", village, round)
+                                hasError = True
+                            End If
                         End If
                     Else
 
@@ -383,6 +387,22 @@ Public Class clsResidency
             Case Else
                 returnValue = True
         End Select
+        Return returnValue
+    End Function
+
+    Private Function endEventDateExists(ByVal Residencyrecord As DataRow) As Boolean
+        Dim returnValue As Boolean = True
+        Dim sql As String = ""
+        sql = "select count(*) as num  " _
+                    & "  from  [DSSHRS].dss.residency " _
+                    & " where (edate is not null) and CAST(floor(cast(edate as float)) as datetime)='" + CDate(Residencyrecord("sdate")).ToString("dd-MMM-yyyy") + "' " _
+                    & " and (individid='" + Residencyrecord("individid").ToString.Trim + "')"
+        If Me.da.executeScalar_INMainDB(sql) > 0 Then
+            returnValue = True
+        Else
+            returnValue = False
+        End If
+
         Return returnValue
     End Function
     Private Function hadDied(ByVal individid As String) As Boolean

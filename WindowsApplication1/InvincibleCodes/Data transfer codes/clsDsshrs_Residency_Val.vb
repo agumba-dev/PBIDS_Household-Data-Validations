@@ -159,11 +159,11 @@ Public Class clsDsshrs_Residency_Val
                             Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has a DTH event", "", Now(), "", village, round)
                             hasError = True
                         End If
-                        'individual should have only one open episode
-                        'If Me.hasOpenEpisode(Residencyrecord) Then
-                        '    Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "Individual has another open episode", "", Now(), "", village, round)
-                        '    hasError = True
-                        'End If
+                        'The ENT date value should not be equal to the subsequent EXT date value
+                        If Me.endEventDateExists(Residencyrecord) Then
+                            Me.da.saveError(Residencyrecord("ResidencyID").ToString.Trim, tablename, "the previous end event date is similar to current sdate ", "", Now(), "", village, round)
+                            hasError = True
+                        End If
                     End If
                     
                 Case "TRI"
@@ -253,8 +253,8 @@ Public Class clsDsshrs_Residency_Val
         Select Case (IsDBNull(Residencyrecord("eeventtype")) Or IsDBNull(Residencyrecord("edate")) Or IsDBNull(Residencyrecord("eobserveid")))
             Case True
                 sql = "SELECT count(*) FROM [DSSHRS].[DSS].[residency] " _
-                    & " where (sdate is not null) and (year([sdate])=" + CDate(Residencyrecord("sdate")).Year.ToString + ") and (month(sdate)=" + CDate(Residencyrecord("sdate")).Month.ToString + ") " _
-                    & " and (day(sdate)=" + CDate(Residencyrecord("sdate")).Day.ToString + ") and (individid='" + Residencyrecord("individid").ToString.Trim + "') and (ResidencyID<>'" + Residencyrecord("ResidencyID").ToString + "')"
+                    & " where (sdate is not null) and (cast(floor(cast([sdate] as float)) as datetime) ='" + CDate(Residencyrecord("sdate")).ToString("dd-MMM-yyyy") + "')  " _
+                    & "  and (individid='" + Residencyrecord("individid").ToString.Trim + "') and (ResidencyID<>'" + Residencyrecord("ResidencyID").ToString + "')"
                 If Me.da.executeScalar_INMainDB(sql) > 0 Then
                     returnValue = True
                 Else
@@ -275,6 +275,23 @@ Public Class clsDsshrs_Residency_Val
         End Select
         Return returnValue
     End Function
+
+    Private Function endEventDateExists(ByVal Residencyrecord As DataRow) As Boolean
+        Dim returnValue As Boolean = True
+        Dim sql As String = ""
+        sql = "select count(*) as num  " _
+                    & "  from  [DSSHRS].dss.residency " _
+                    & " where (edate is not null) and CAST(floor(cast(edate as float)) as datetime)='" + CDate(Residencyrecord("sdate")).ToString("dd-MMM-yyyy") + "' " _
+                    & " and (individid='" + Residencyrecord("individid").ToString.Trim + "')"
+        If Me.da.executeScalar_INMainDB(sql) > 0 Then
+            returnValue = True
+        Else
+            returnValue = False
+        End If
+            
+        Return returnValue
+    End Function
+
     Private Function hadDied(ByVal Residencyrecord As DataRow) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT count(*)  FROM [DSSHRS].[DSS].[residency]" _

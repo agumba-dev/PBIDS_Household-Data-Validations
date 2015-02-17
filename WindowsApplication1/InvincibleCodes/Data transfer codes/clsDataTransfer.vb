@@ -966,6 +966,7 @@ Public Class clsDataTransfer
             "SpecialStudies.EVP_Anthropometric", _
             "SpecialStudies.EVPinterviewOutcome", _
             "SpecialStudies.immunize", _
+            "SpecialStudies.immunize_new", _
             "SpecialStudies.SocialGroupSurvey", _
             "BH.BIRTHHISTORY", _
             "BH.CHILDREN", _
@@ -974,7 +975,7 @@ Public Class clsDataTransfer
             "PBR.afterdelivery_service", _
             "PBR.anc", _
             "PBR.anc_place", _
-            "radio.prevention_practice", "radio.listening","radio.influenza"}
+            "radio.prevention_practice", "radio.listening", "radio.influenza"}
 
     Private Function transfer_specialStudies() As String
         Dim str As String = vbCrLf
@@ -1616,6 +1617,7 @@ Public Class clsDataTransfer
             "specialstudies.hsedetails", _
             "specialstudies.huas_lite", _
             "specialstudies.immunize", _
+            "specialstudies.immunize_new", _
             "specialstudies.ses", _
             "specialstudies.education", _
             "specialstudies.itn", _

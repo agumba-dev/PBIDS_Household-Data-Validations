@@ -1312,7 +1312,7 @@ Public Class clsDataAccess
                     compound = Me.objVal.getIDSubstring(row("observeid").ToString.Trim, idTypes.COMPOUND)
 
                 Case "DSS.LOCATION", "DSS.PREGNANCY", "DSS.OBSERVATION", "DSS.RESIDENCY", "DSS.VISITATION", "SPECIALSTUDIES.HSEDETAILS" _
-                         , "SPECIALSTUDIES.IMMUNIZE", "SPECIALSTUDIES.ITN", "SPECIALSTUDIES.MORBIDITY", "SPECIALSTUDIES.RELIGION", "MHRS_SYS.CHANGES", "[MHRS_SYS].[CHANGES]", _
+                         , "SPECIALSTUDIES.IMMUNIZE", "SPECIALSTUDIES.IMMUNIZE_NEW", "SPECIALSTUDIES.IMMUNIZE_NEW", "SPECIALSTUDIES.ITN", "SPECIALSTUDIES.MORBIDITY", "SPECIALSTUDIES.RELIGION", "MHRS_SYS.CHANGES", "[MHRS_SYS].[CHANGES]", _
                                         "ghi.Child_health".ToUpper, _
                     "ghi.family_planning".ToUpper, _
                     "ghi.ghi_itn".ToUpper, _
@@ -1912,7 +1912,7 @@ Public Class clsDataAccess
                         round = cmd.ExecuteScalar()
                     End If
                 Case "specialstudies.ses", "specialstudies.religion", "specialstudies.parentsurv", "specialstudies.morbidity" _
-                  , "specialstudies.itn", "specialstudies.immunize", "specialstudies.huas_lite", "specialstudies.hsedetails" _
+                  , "specialstudies.itn", "specialstudies.immunize", "specialstudies.immunize_new", "specialstudies.immunize_new", "specialstudies.huas_lite", "specialstudies.hsedetails" _
                  , "specialstudies.health", "specialstudies.gpsdata" _
                   , "specialstudies.druguse", "specialstudies.dmicampaign", "specialstudies.contraception" _
                  , "dss.compadmin", "dss.observation", "dss.socialgroupadmin", "dss.visitation", _
@@ -2084,8 +2084,6 @@ Public Class clsDataAccess
                     End Try
 
                 Case "specialstudies.EVP_Anthropometric".ToLower, "specialstudies.EVP".ToLower, "specialstudies.EVPinterviewOutcome".ToLower
-
-
                     Try
                         round = row("round").ToString
                     Catch ex As Exception

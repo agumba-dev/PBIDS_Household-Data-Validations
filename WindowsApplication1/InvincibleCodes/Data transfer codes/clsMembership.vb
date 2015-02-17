@@ -160,7 +160,7 @@ Public Class clsMembership
         'membershipID	1	uniqueidentifier
         If IsDBNull(Membershiprecord("edate")) Or IsDBNull(Membershiprecord("eeventtype")) Or IsDBNull(Membershiprecord("eobserveid")) Then
             If Me.da.validationtype = mhrsSyncValidationTypes.userpplication Then
-                Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "the end episode has null attributes", "", Now(), "", village, round)
+                Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "the end episode has null attribu     tes", "", Now(), "", village, round)
             End If
             hasError = True
         Else
@@ -255,6 +255,10 @@ Public Class clsMembership
                             'individual should have only one open episode
                             If Me.hasOpenEpisode(Membershiprecord) Then
                                 Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "Individual has another open episode", "", Now(), "", village, round)
+                                hasError = True
+                            End If
+                            If Me.endEventDateExists(Membershiprecord) Then
+                                Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "the previous end event date is similar to current sdate ", "", Now(), "", village, round)
                                 hasError = True
                             End If
                         End If
@@ -406,6 +410,31 @@ Public Class clsMembership
         End Select
         Return returnValue
     End Function
+
+
+    Private Function endEventDateExists(ByVal Membershiprecord As DataRow) As Boolean
+        Dim returnValue As Boolean = True
+        Dim sql As String = ""
+
+
+        'Emmanuel Added this change
+        'Due to the socialgroup enumaration, the end event with efieldworker as PROG have the same sdate this flags an error
+        'I added a check to ignore all records whose end event is not equal to PROG
+        sql = "SELECT count(*) FROM [DSSHRS].[DSS].[getMembershipEndRecordWithoutProg] (  '" & _
+        "" + Membershiprecord("memberShipID").ToString + "'" & _
+        "  ,'" + Membershiprecord("individid").ToString.Trim + "'  " & _
+        "  ,'" + CDate(Membershiprecord("sdate")).ToString("dd-MMM-yyyy") + "'  " & _
+        "  ,1)  "
+
+        If Me.da.executeScalar_INMainDB(sql) > 0 Then
+            returnValue = True
+        Else
+            returnValue = False
+        End If
+
+        Return returnValue
+    End Function
+
     Private Function hadDied(ByVal individid As String) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT count(*)  FROM [DSSHRS].[DSS].[membership]" _
