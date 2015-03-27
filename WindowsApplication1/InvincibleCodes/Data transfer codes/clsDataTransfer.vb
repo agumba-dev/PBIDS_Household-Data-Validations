@@ -556,7 +556,7 @@ Public Class clsDataTransfer
             End If
         Catch ex As Exception
             objRef.strObjMethod = New Diagnostics.StackTrace().ToString()
-
+            returnMessage = ex.Message
             'strObjFileName = strObjFileName.Substring(strObjFileName.LastIndexOf("\") + 1)
 
             ' MsgBox(ex.Message)
@@ -675,7 +675,7 @@ Public Class clsDataTransfer
             End If
         Catch ex As Exception
             objRef.strObjMethod = New Diagnostics.StackTrace().ToString()
-
+            returnMessage = ex.Message
             'strObjFileName = strObjFileName.Substring(strObjFileName.LastIndexOf("\") + 1)
 
             ' MsgBox(ex.Message)
@@ -1004,7 +1004,6 @@ Public Class clsDataTransfer
     End Function
     Private eventsStudies As String() = _
            {"DSS.Migrations", _
-           "DSS.birth", _
            "DSS.pregoutcome", _
            "DSS.indvstatus", _
            "DSS.Events_Episodes", _
@@ -1401,19 +1400,27 @@ Public Class clsDataTransfer
 
         worker.ReportProgress(Nothing, " starting  validating and uploading DSS.membership " & " " & Now.ToString())
 
+        Try
+            returnVal = returnVal & vbCrLf & Me.foreignKeys.ValidateforeignKey_Table_inTEMP_DSSHRS("DSS.Membership", "not(rec_status like '%x%')")
 
-        returnVal = returnVal & vbCrLf & Me.foreignKeys.ValidateforeignKey_Table_inTEMP_DSSHRS("DSS.Membership", "not(rec_status like '%x%')")
+            Me.memb.validateMembership(Me.da.getTableDataFromTempDB("select * from dss.Membership  where rec_status in('U','DU','TU','MU') order by edate asc,sdate asc "), "dss.Membership", worker)
+            returnVal = returnVal & vbCrLf & Me.transfer_membership_UPDATES(clsGlobalVariable.HRS_Temp_DBCon, clsGlobalVariable.HRS_Main_DBCon, _
+                                 "SELECT * FROM [DSS].[membership] where (rec_status in('U','DU','TU','MU')) and ([errflag]=0)")
+        Catch ex As Exception
+            worker.ReportProgress(Nothing, ex.Message & ": finished validating and uploading DSS.memberships end events" & " " & Now.ToString())
+        End Try
 
-        Me.memb.validateMembership(Me.da.getTableDataFromTempDB("select * from dss.Membership  where rec_status in('U','DU','TU','MU') order by edate asc,sdate asc "), "dss.Membership", worker)
-        returnVal = returnVal & vbCrLf & Me.transfer_membership_UPDATES(clsGlobalVariable.HRS_Temp_DBCon, clsGlobalVariable.HRS_Main_DBCon, _
-                             "SELECT * FROM [DSS].[membership] where (rec_status in('U','DU','TU','MU')) and ([errflag]=0)")
+        Try
+            Me.memb.validateMembership(Me.da.getTableDataFromTempDB("select * from dss.Membership  where rec_status in('DI','I','TI','MI') order by sdate asc,edate asc "), "dss.Membership", worker)
+            returnVal = returnVal & vbCrLf & Me.transfer_membership_NewEpisodes(clsGlobalVariable.HRS_Temp_DBCon, clsGlobalVariable.HRS_Main_DBCon, _
+                                    "SELECT * FROM [DSS].[Membership] where   (rec_status in('I','DI','TI','TI','MI')) and ([errflag]=0)")
 
-        Me.memb.validateMembership(Me.da.getTableDataFromTempDB("select * from dss.Membership  where rec_status in('DI','I','TI','MI') order by sdate asc,edate asc "), "dss.Membership", worker)
-        returnVal = returnVal & vbCrLf & Me.transfer_membership_NewEpisodes(clsGlobalVariable.HRS_Temp_DBCon, clsGlobalVariable.HRS_Main_DBCon, _
-                                "SELECT * FROM [DSS].[Membership] where   (rec_status in('I','DI','TI','TI','MI')) and ([errflag]=0)")
+        Catch ex As Exception
+            worker.ReportProgress(Nothing, ex.StackTrace & ": finished validating and uploading DSS.memberships open" & " " & Now.ToString())
 
+        End Try
 
-        worker.ReportProgress(Nothing, " finished validating and uploading DSS.memberships " & " " & Now.ToString())
+        worker.ReportProgress(Nothing, " finished validating and uploading DSS.memberships" & " " & Now.ToString())
 
         'Pregnacy()
 

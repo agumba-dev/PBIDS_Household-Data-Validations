@@ -160,7 +160,7 @@ Public Class clsMembership
         'membershipID	1	uniqueidentifier
         If IsDBNull(Membershiprecord("edate")) Or IsDBNull(Membershiprecord("eeventtype")) Or IsDBNull(Membershiprecord("eobserveid")) Then
             If Me.da.validationtype = mhrsSyncValidationTypes.userpplication Then
-                Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "the end episode has null attribu     tes", "", Now(), "", village, round)
+                Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "the end episode has null attributes", "", Now(), "", village, round)
             End If
             hasError = True
         Else
@@ -233,6 +233,9 @@ Public Class clsMembership
                         Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "Individual has another episode", "", Now(), "", village, round)
                         hasError = True
                     End If
+
+                  
+
                 Case "ENT"
                     'check if its a return migrant
                     If Me.hasEpisodes(Membershiprecord("individid").ToString) Then
@@ -331,6 +334,19 @@ Public Class clsMembership
                     'Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Unknown start event", "", Now(), "")
                     'hasError = True
             End Select
+
+
+            Select Case Membershiprecord("seventtype").ToString.ToUpper.Trim
+                Case "TRI", "ENT", "BIR", "ENU"
+                    If Me.da.GetMatchingStartEndEvent(Membershiprecord("individid").ToString, Membershiprecord("sdate").ToString(), Membershiprecord("seventtype").ToString, 1, 1) Then
+                        Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "This Membership record is missing a matching residecy record for this start event", "", Now(), "", village, round)
+                        hasError = True
+                    End If
+            End Select
+
+            
+
+
         Else
             hasError = True
         End If
@@ -376,6 +392,14 @@ Public Class clsMembership
                 Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "episode not in membership", "", Now(), "", village, round)
                 hasError = True
             End If
+            Select Case Membershiprecord("eeventtype").ToString.ToUpper.Trim
+                Case "DTH", "TRO", "EXT"
+                    If Me.da.GetMatchingStartEndEvent(Membershiprecord("individid").ToString, Membershiprecord("edate").ToString, _
+                                                Membershiprecord("eeventtype"), 2, 1) Then
+                        Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "This Membership record is missing a matching residecy record for this end event", "", Now(), "", village, round)
+                        hasError = True
+                    End If
+            End Select
         Else
             hasError = True
         End If
@@ -457,6 +481,7 @@ Public Class clsMembership
         End If
         Return returnValue
     End Function
+   
     Private Function Episodes_exists(ByVal membershiprecord As DataRow) As Boolean
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT count(*)  FROM [DSSHRS].[DSS].[membership]" _
@@ -516,8 +541,7 @@ Public Class clsMembership
     End Function
     Private Function Isregistered(ByVal individid As String) As Boolean
         Dim returnValue As Boolean = True
-        Dim sql As String = "SELECT count(*)  FROM [DSSHRS].[DSS].[individual]" _
-                            & "where  (individid='" + individid + "')"
+        Dim sql As String = "SELECT count(*)  FROM [DSSHRS].[DSS].[individual] where  (individid='" + individid + "')"
         If Me.da.executeScalar_INMainDB(sql) > 0 Then
             returnValue = True
         Else
@@ -529,7 +553,13 @@ Public Class clsMembership
         Dim returnValue As String = Nothing
         Dim sql As String = "SELECT distinct [lastevent]  FROM [DSSHRS].[dbo].[lastmemberships]" _
                             & "where  (individid='" + individid + "') "
-        returnValue = Me.da.getScalar_inMainDB(sql).ToString.Trim
+        Try
+            returnValue = Me.da.getScalar_inMainDB(sql).ToString.Trim
+        Catch ex As Exception
+            returnValue = individid & " " & ex.Message
+            Throw New Exception(returnValue)
+        End Try
+
         Return returnValue
     End Function
     Private Function TRIhasValideTRO(ByVal Membershiprecord As DataRow) As Boolean

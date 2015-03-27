@@ -253,6 +253,14 @@ Public Class clsDsshrs_Membership_Val
                     'Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "Unknown start event", "", Now(), "")
                     'hasError = True
             End Select
+
+            Select Case Membershiprecord("seventtype").ToString.ToUpper.Trim
+                Case "TRI", "ENT", "BIR", "ENU"
+                    If Me.da.GetMatchingStartEndEvent(Membershiprecord("individid").ToString, Membershiprecord("sdate").ToString(), Membershiprecord("seventtype").ToString, 1, 1) Then
+                        Me.da.saveError(Membershiprecord("memberShipID").ToString.Trim, tablename, "This Membership record is missing a matching residecy record for this start event", "", Now(), "", village, round)
+                        hasError = True
+                    End If
+            End Select
         Else
             hasError = True
         End If
@@ -289,6 +297,15 @@ Public Class clsDsshrs_Membership_Val
                 Case Else
                     'Me.da.saveError(Membershiprecord("transit_id").ToString.Trim, tablename, "Unknown end event", "", Now(), "")
                     'hasError = True
+            End Select
+
+            Select Case Membershiprecord("eeventtype").ToString.ToUpper.Trim
+                Case "DTH", "TRO", "EXT"
+                    If Me.da.GetMatchingStartEndEvent(Membershiprecord("individid").ToString, Membershiprecord("edate").ToString, _
+                                                Membershiprecord("eeventtype"), 2, 1) Then
+                        Me.da.saveError(Membershiprecord("memberShipID").ToString.Trim, tablename, "This Membership record is missing a matching residecy record for this end event", "", Now(), "", village, round)
+                        hasError = True
+                    End If
             End Select
 
         Else

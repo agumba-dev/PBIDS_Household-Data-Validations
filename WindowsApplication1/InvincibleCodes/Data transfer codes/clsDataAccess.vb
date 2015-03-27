@@ -515,6 +515,17 @@ Public Class clsDataAccess
         clsGlobalVariable.close_HRS_Main_DBCon()
         Return recCount
     End Function
+    Public Function GetMatchingStartEndEvent(ByVal individid As String, dt As String, strEType As String, episode As Int16, source As Int16) As Boolean
+        Dim returnValue As Boolean = True
+        Dim sql As String = "SELECT  [DSSHRS].[dbo].[SurvGetMatchingRec] ('" & individid & "' ,'" & dt & "' ,'" & strEType & "'  ," & episode & "  ," & source & ")"
+        If Me.executeScalar_INMainDB(sql) > 0 Then
+            returnValue = False
+        Else
+            returnValue = True
+        End If
+        Return returnValue
+    End Function
+
     Public Function getScalar_inMainDB(ByVal query As String) As Object
         Dim commsql As New SqlCommand
         Dim recCount As Object = Nothing
@@ -971,7 +982,7 @@ Public Class clsDataAccess
         Return strServerName
     End Function
     Public Function getTablesToValidate() As DataTable
-        Dim str As String = "SELECT * FROM [dataChecker].[dbo].[TablesTovalidate]"
+        Dim str As String = "SELECT * FROM [dataChecker].[dbo].[TablesTovalidate]'"
         Dim cmd As New SqlCommand(str, conDataCheker)
         If Not conDataCheker.State = ConnectionState.Open Then conDataCheker.Open()
         Dim dt As New DataTable()
