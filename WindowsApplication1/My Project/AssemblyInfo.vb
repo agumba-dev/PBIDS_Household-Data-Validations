@@ -36,13 +36,27 @@ End Namespace
 Friend Module Program
     Friend Const ServiceNameValue As String = "PBIDSHouseholdDataValidator"
     Friend Property IsServiceMode As Boolean = False
+    Friend Property LastErrorMessage As String = ""
+
+    Private handlingError As Boolean = False
 
     <STAThread>
     Public Sub Main()
         Environment.CurrentDirectory = AppContext.BaseDirectory
         IsServiceMode = Not Environment.UserInteractive
+        ConfigureExceptionHandling()
 
         If Not IsServiceMode Then
+            Dim startupError As String = ""
+            If Not ValidateRuntimeConfiguration(startupError) Then
+                LastErrorMessage = startupError
+                MessageBox.Show(startupError,
+                                "PBIDS Data Validator - Startup Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error)
+                Return
+            End If
+
             Application.EnableVisualStyles()
             Application.SetCompatibleTextRenderingDefault(False)
             Application.Run(New frm_ToValidateForm())
@@ -51,6 +65,132 @@ Friend Module Program
 
         ServiceBase.Run(New ServiceBase() {New PBIDSValidatorService()})
     End Sub
+
+    Private Sub ConfigureExceptionHandling()
+        Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)
+        AddHandler Application.ThreadException, AddressOf ApplicationThreadException
+        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf CurrentDomainUnhandledException
+    End Sub
+
+    Private Sub ApplicationThreadException(sender As Object, e As ThreadExceptionEventArgs)
+        ReportApplicationError("An unexpected application error occurred.", e.Exception)
+
+        If IsServiceMode Then
+            Application.ExitThread()
+        Else
+            Application.Exit()
+        End If
+    End Sub
+
+    Private Sub CurrentDomainUnhandledException(sender As Object, e As UnhandledExceptionEventArgs)
+        Dim ex = TryCast(e.ExceptionObject, Exception)
+        If ex Is Nothing Then
+            ex = New Exception("An unknown unhandled error occurred.")
+        End If
+
+        ReportApplicationError("An unexpected background error occurred.", ex)
+
+        If IsServiceMode Then
+            Dim logFile = FindLatestValidationLog()
+            SendDatabaseMail(
+                "PBIDS Household Data Validation - FAILED",
+                LastErrorMessage,
+                logFile)
+        End If
+    End Sub
+
+    Friend Sub ReportApplicationError(context As String, ex As Exception)
+        If handlingError Then Return
+        handlingError = True
+
+        Try
+            Dim message As String = context
+
+            If ex IsNot Nothing Then
+                message &= Environment.NewLine & Environment.NewLine &
+                           ex.GetType().Name & ": " &
+                           If(String.IsNullOrWhiteSpace(ex.Message),
+                              "No additional error details were provided.",
+                              ex.Message)
+
+                If Not String.IsNullOrWhiteSpace(ex.StackTrace) Then
+                    message &= Environment.NewLine & Environment.NewLine & ex.StackTrace
+                End If
+            End If
+
+            LastErrorMessage = message
+
+            If Not IsServiceMode Then
+                MessageBox.Show(message,
+                                "PBIDS Data Validator Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error)
+            End If
+        Finally
+            handlingError = False
+        End Try
+    End Sub
+
+    Friend Function ValidateRuntimeConfiguration(ByRef errorMessage As String) As Boolean
+        errorMessage = ""
+
+        Dim serverFile = Path.Combine(AppContext.BaseDirectory, "serverpath")
+        If Not File.Exists(serverFile) Then
+            errorMessage = "The SQL Server configuration file was not found." &
+                           Environment.NewLine & Environment.NewLine &
+                           "Expected file:" & Environment.NewLine & serverFile &
+                           Environment.NewLine & Environment.NewLine &
+                           "Create or copy the existing serverpath file into the application folder and put the SQL Server name on the first line."
+            Return False
+        End If
+
+        Dim serverName = ReadServerName()
+        If String.IsNullOrWhiteSpace(serverName) Then
+            errorMessage = "The serverpath file is empty." &
+                           Environment.NewLine & Environment.NewLine &
+                           "File:" & Environment.NewLine & serverFile &
+                           Environment.NewLine & Environment.NewLine &
+                           "Put the SQL Server name on the first line."
+            Return False
+        End If
+
+        Try
+            Dim connectionString = "Data Source=" & serverName &
+                                   ";Initial Catalog=master;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=15"
+
+            Using con As New SqlConnection(connectionString)
+                con.Open()
+
+                Dim requiredDatabases As String() = {"TEMP_DSSHRS", "DSSHRS", "dataChecker"}
+                Dim missing As New List(Of String)()
+
+                For Each databaseName In requiredDatabases
+                    Using cmd As New SqlCommand("SELECT DB_ID(@databaseName)", con)
+                        cmd.Parameters.AddWithValue("@databaseName", databaseName)
+                        Dim result = cmd.ExecuteScalar()
+
+                        If result Is Nothing OrElse result Is DBNull.Value Then
+                            missing.Add(databaseName)
+                        End If
+                    End Using
+                Next
+
+                If missing.Count > 0 Then
+                    errorMessage = "SQL Server connection succeeded, but the following required database(s) were not found on server '" &
+                                   serverName & "':" & Environment.NewLine & Environment.NewLine &
+                                   String.Join(Environment.NewLine, missing)
+                    Return False
+                End If
+            End Using
+        Catch ex As Exception
+            errorMessage = "Unable to initialize the PBIDS Data Validator against SQL Server '" & serverName & "'." &
+                           Environment.NewLine & Environment.NewLine &
+                           ex.GetType().Name & ": " & ex.Message
+            Return False
+        End Try
+
+        Return True
+    End Function
 
     Friend Function FindLatestValidationLog() As String
         Try
@@ -65,9 +205,17 @@ Friend Module Program
     End Function
 
     Friend Function ReadServerName() As String
-        Dim serverFile = Path.Combine(AppContext.BaseDirectory, "serverpath")
-        If Not File.Exists(serverFile) Then Return ""
-        Return File.ReadAllText(serverFile).Trim()
+        Try
+            Dim serverFile = Path.Combine(AppContext.BaseDirectory, "serverpath")
+            If Not File.Exists(serverFile) Then Return ""
+
+            Dim serverName = File.ReadAllText(serverFile)
+            If serverName Is Nothing Then Return ""
+
+            Return serverName.Trim()
+        Catch
+            Return ""
+        End Try
     End Function
 
     Friend Function GetNotificationRecipients() As String
@@ -155,8 +303,20 @@ Friend NotInheritable Class PBIDSValidatorService
 
     Private Sub RunValidation()
         Dim startedAt = DateTime.Now
+        Program.LastErrorMessage = ""
+
         Try
             Environment.CurrentDirectory = AppContext.BaseDirectory
+
+            Dim startupError As String = ""
+            If Not Program.ValidateRuntimeConfiguration(startupError) Then
+                Program.LastErrorMessage = startupError
+                Program.SendDatabaseMail(
+                    "PBIDS Household Data Validation - FAILED",
+                    startupError)
+                Return
+            End If
+
             Program.SendDatabaseMail(
                 "PBIDS Household Data Validation - STARTED",
                 "The PBIDS household data validation service started at " & startedAt.ToString("yyyy-MM-dd HH:mm:ss") & ".")
@@ -177,6 +337,16 @@ Friend NotInheritable Class PBIDSValidatorService
 
             Dim finishedAt = DateTime.Now
             Dim logFile = Program.FindLatestValidationLog()
+
+            If Not String.IsNullOrWhiteSpace(Program.LastErrorMessage) Then
+                Program.SendDatabaseMail(
+                    "PBIDS Household Data Validation - FAILED",
+                    "The PBIDS household data validation service failed at " & finishedAt.ToString("yyyy-MM-dd HH:mm:ss") &
+                    "." & Environment.NewLine & Environment.NewLine & Program.LastErrorMessage,
+                    logFile)
+                Return
+            End If
+
             Program.SendDatabaseMail(
                 "PBIDS Household Data Validation - COMPLETED",
                 "The PBIDS household data validation service completed at " & finishedAt.ToString("yyyy-MM-dd HH:mm:ss") &
@@ -184,11 +354,12 @@ Friend NotInheritable Class PBIDSValidatorService
                 Environment.NewLine & "Duration: " & (finishedAt - startedAt).ToString(),
                 logFile)
         Catch ex As Exception
+            Program.ReportApplicationError("The PBIDS household validation service failed.", ex)
+
             Dim logFile = Program.FindLatestValidationLog()
             Program.SendDatabaseMail(
                 "PBIDS Household Data Validation - FAILED",
-                "The PBIDS household data validation service failed at " & DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") &
-                "." & Environment.NewLine & Environment.NewLine & ex.ToString(),
+                Program.LastErrorMessage,
                 logFile)
         Finally
             Try
