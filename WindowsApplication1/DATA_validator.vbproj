@@ -67,9 +67,7 @@
     <EmbeddedResource Remove="InvincibleCodes\Presentation\Frm_TheValidationsEditor.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="DgvFilterPopup, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
-  </ItemGroup>
-  <ItemGroup>
+    <Import Include="System.Data" />
     <Import Include="System.Drawing" />
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
@@ -126,7 +124,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="172.52.0" />
