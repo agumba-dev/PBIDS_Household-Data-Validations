@@ -36,6 +36,7 @@ End Namespace
 Friend Module Program
     Friend Const ServiceNameValue As String = "PBIDSHouseholdDataValidator"
     Friend Const ServiceRoot As String = "C:\services"
+    Friend Const ValidationLogRoot As String = "D:\Logs\ValidationLogs"
     Friend Property IsServiceMode As Boolean = False
     Friend Property LastErrorMessage As String = ""
 
@@ -47,6 +48,10 @@ Friend Module Program
         End If
 
         Return AppContext.BaseDirectory
+    End Function
+
+    Friend Function GetValidationLogFolder() As String
+        Return ValidationLogRoot
     End Function
 
     <STAThread>
@@ -69,6 +74,7 @@ Friend Module Program
             Application.EnableVisualStyles()
             Application.SetCompatibleTextRenderingDefault(False)
             Application.Run(New frm_ToValidateForm())
+            ArchiveLatestValidationLog()
             Return
         End If
 
@@ -100,7 +106,7 @@ Friend Module Program
         ReportApplicationError("An unexpected background error occurred.", ex)
 
         If IsServiceMode Then
-            Dim logFile = FindLatestValidationLog()
+            Dim logFile = ArchiveLatestValidationLog()
             SendDatabaseMail(
                 "PBIDS Household Data Validation - FAILED",
                 LastErrorMessage,
@@ -164,6 +170,17 @@ Friend Module Program
         End If
 
         Try
+            Directory.CreateDirectory(GetValidationLogFolder())
+        Catch ex As Exception
+            errorMessage = "Unable to access the validation log folder." &
+                           Environment.NewLine & Environment.NewLine &
+                           "Folder: " & GetValidationLogFolder() &
+                           Environment.NewLine & Environment.NewLine &
+                           ex.GetType().Name & ": " & ex.Message
+            Return False
+        End Try
+
+        Try
             Dim connectionString = "Data Source=" & serverName &
                                    ";Initial Catalog=master;Integrated Security=True;TrustServerCertificate=True;Connect Timeout=15"
 
@@ -203,13 +220,53 @@ Friend Module Program
 
     Friend Function FindLatestValidationLog() As String
         Try
-            Dim files = Directory.GetFiles(GetRuntimeFolder(), "autorunLog_*")
+            Directory.CreateDirectory(GetValidationLogFolder())
+
+            Dim files = Directory.GetFiles(GetValidationLogFolder(), "autorunLog_*")
+            If files.Length > 0 Then
+                Array.Sort(files, Function(a, b) File.GetLastWriteTimeUtc(b).CompareTo(File.GetLastWriteTimeUtc(a)))
+                Return files(0)
+            End If
+
+            files = Directory.GetFiles(GetRuntimeFolder(), "autorunLog_*")
             If files.Length = 0 Then Return ""
 
             Array.Sort(files, Function(a, b) File.GetLastWriteTimeUtc(b).CompareTo(File.GetLastWriteTimeUtc(a)))
             Return files(0)
         Catch
             Return ""
+        End Try
+    End Function
+
+    Friend Function ArchiveLatestValidationLog() As String
+        Try
+            Directory.CreateDirectory(GetValidationLogFolder())
+
+            Dim sourceFiles = Directory.GetFiles(GetRuntimeFolder(), "autorunLog_*")
+            If sourceFiles.Length = 0 Then
+                Return FindLatestValidationLog()
+            End If
+
+            Array.Sort(sourceFiles, Function(a, b) File.GetLastWriteTimeUtc(b).CompareTo(File.GetLastWriteTimeUtc(a)))
+            Dim sourceFile = sourceFiles(0)
+            Dim fileName = Path.GetFileName(sourceFile)
+
+            If String.IsNullOrWhiteSpace(Path.GetExtension(fileName)) Then
+                fileName &= ".txt"
+            End If
+
+            Dim destinationFile = Path.Combine(GetValidationLogFolder(), fileName)
+
+            If File.Exists(destinationFile) Then
+                destinationFile = Path.Combine(
+                    GetValidationLogFolder(),
+                    Path.GetFileNameWithoutExtension(fileName) & "_" & DateTime.Now.ToString("yyyyMMdd_HHmmss") & Path.GetExtension(fileName))
+            End If
+
+            File.Move(sourceFile, destinationFile)
+            Return destinationFile
+        Catch
+            Return FindLatestValidationLog()
         End Try
     End Function
 
@@ -345,7 +402,7 @@ Friend NotInheritable Class PBIDSValidatorService
             End Using
 
             Dim finishedAt = DateTime.Now
-            Dim logFile = Program.FindLatestValidationLog()
+            Dim logFile = Program.ArchiveLatestValidationLog()
 
             If Not String.IsNullOrWhiteSpace(Program.LastErrorMessage) Then
                 Program.SendDatabaseMail(
@@ -365,7 +422,7 @@ Friend NotInheritable Class PBIDSValidatorService
         Catch ex As Exception
             Program.ReportApplicationError("The PBIDS household validation service failed.", ex)
 
-            Dim logFile = Program.FindLatestValidationLog()
+            Dim logFile = Program.ArchiveLatestValidationLog()
             Program.SendDatabaseMail(
                 "PBIDS Household Data Validation - FAILED",
                 Program.LastErrorMessage,
