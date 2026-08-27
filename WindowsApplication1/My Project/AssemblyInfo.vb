@@ -18,12 +18,14 @@ Imports System.Windows.Forms
 ' Windows Service Control Manager without adding another project/file.
 Friend Module Program
     Private Const ServiceNameValue As String = "PBIDSHouseholdDataValidator"
+    Friend Property IsServiceMode As Boolean = False
 
     <STAThread>
     Public Sub Main()
         Environment.CurrentDirectory = AppContext.BaseDirectory
+        IsServiceMode = Not Environment.UserInteractive
 
-        If Environment.UserInteractive Then
+        If Not IsServiceMode Then
             Application.EnableVisualStyles()
             Application.SetCompatibleTextRenderingDefault(False)
             Application.Run(New frm_ToValidateForm())
@@ -115,7 +117,7 @@ Friend NotInheritable Class PBIDSValidatorService
     Private stopRequested As Boolean
 
     Public Sub New()
-        ServiceName = "PBIDSHouseholdDataValidator"
+        ServiceName = ServiceNameValue
         CanStop = True
         CanPauseAndContinue = False
         AutoLog = True
@@ -147,9 +149,9 @@ Friend NotInheritable Class PBIDSValidatorService
             Application.EnableVisualStyles()
             Application.SetCompatibleTextRenderingDefault(False)
 
-            ' The existing form remains the single validation engine. In unattended
-            ' mode its existing runSetup=on path starts the BackgroundWorker and
-            ' exits the application when processing completes.
+            ' The existing form remains the validation engine. In unattended mode
+            ' runSetup=on starts the BackgroundWorker automatically and the existing
+            ' completion handler closes the application when the batch finishes.
             Using validator As New frm_ToValidateForm()
                 validator.ShowInTaskbar = False
                 validator.WindowState = FormWindowState.Minimized
