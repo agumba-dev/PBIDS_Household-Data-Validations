@@ -35,14 +35,23 @@ End Namespace
 ' Windows Service Control Manager without adding another project/file.
 Friend Module Program
     Friend Const ServiceNameValue As String = "PBIDSHouseholdDataValidator"
+    Friend Const ServiceRoot As String = "C:\services"
     Friend Property IsServiceMode As Boolean = False
     Friend Property LastErrorMessage As String = ""
 
     Private handlingError As Boolean = False
 
+    Friend Function GetRuntimeFolder() As String
+        If Directory.Exists(ServiceRoot) Then
+            Return ServiceRoot
+        End If
+
+        Return AppContext.BaseDirectory
+    End Function
+
     <STAThread>
     Public Sub Main()
-        Environment.CurrentDirectory = AppContext.BaseDirectory
+        Environment.CurrentDirectory = GetRuntimeFolder()
         IsServiceMode = Not Environment.UserInteractive
         ConfigureExceptionHandling()
 
@@ -134,13 +143,13 @@ Friend Module Program
     Friend Function ValidateRuntimeConfiguration(ByRef errorMessage As String) As Boolean
         errorMessage = ""
 
-        Dim serverFile = Path.Combine(AppContext.BaseDirectory, "serverpath")
+        Dim serverFile = Path.Combine(GetRuntimeFolder(), "serverpath")
         If Not File.Exists(serverFile) Then
             errorMessage = "The SQL Server configuration file was not found." &
                            Environment.NewLine & Environment.NewLine &
                            "Expected file:" & Environment.NewLine & serverFile &
                            Environment.NewLine & Environment.NewLine &
-                           "Create or copy the existing serverpath file into the application folder and put the SQL Server name on the first line."
+                           "The validator expects the server configuration at C:\services\serverpath."
             Return False
         End If
 
@@ -194,7 +203,7 @@ Friend Module Program
 
     Friend Function FindLatestValidationLog() As String
         Try
-            Dim files = Directory.GetFiles(AppContext.BaseDirectory, "autorunLog_*")
+            Dim files = Directory.GetFiles(GetRuntimeFolder(), "autorunLog_*")
             If files.Length = 0 Then Return ""
 
             Array.Sort(files, Function(a, b) File.GetLastWriteTimeUtc(b).CompareTo(File.GetLastWriteTimeUtc(a)))
@@ -206,7 +215,7 @@ Friend Module Program
 
     Friend Function ReadServerName() As String
         Try
-            Dim serverFile = Path.Combine(AppContext.BaseDirectory, "serverpath")
+            Dim serverFile = Path.Combine(GetRuntimeFolder(), "serverpath")
             If Not File.Exists(serverFile) Then Return ""
 
             Dim serverName = File.ReadAllText(serverFile)
@@ -306,7 +315,7 @@ Friend NotInheritable Class PBIDSValidatorService
         Program.LastErrorMessage = ""
 
         Try
-            Environment.CurrentDirectory = AppContext.BaseDirectory
+            Environment.CurrentDirectory = Program.GetRuntimeFolder()
 
             Dim startupError As String = ""
             If Not Program.ValidateRuntimeConfiguration(startupError) Then
