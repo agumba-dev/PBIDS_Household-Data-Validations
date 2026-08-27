@@ -7,7 +7,7 @@
     <StartupObject>DATA_validator.Program</StartupObject>
     <MyType>WindowsForms</MyType>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\noela\Desktop\invincible\</PublishUrl>
+    <PublishUrl>C:\services\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
