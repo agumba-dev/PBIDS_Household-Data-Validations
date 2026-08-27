@@ -1,4 +1,3 @@
-
 Imports System.IO
 Imports System.Net
 
@@ -65,15 +64,31 @@ Public Class clsUtilities
     End Function
 
     Public Function setDataView(ByVal bs As BindingSource, ByVal tableName As String, Optional ByVal description As String = "", Optional ByVal enableDeletions As Boolean = False) As Boolean
-        HRS_Desktop.dgV_General.DataSource = Nothing
-        HRS_Desktop.lblGridName.Text = tableName & " " & description & " Data View"
-        HRS_Desktop.dgV_General.DataSource = bs
-        HRS_Desktop.pnl_Docking.Height = HRS_Desktop.pnl_Docking.MaximumSize.Height
-        HRS_Desktop.enabledelete = enableDeletions
-        HRS_Desktop.dataviewTableName = tableName
-        HRS_Desktop.btn_newWindow.Enabled = True
+        Try
+            ' HRS_Desktop was the legacy application shell and is no longer part of
+            ' the active validator build. Keep the existing record-view function by
+            ' displaying the supplied BindingSource in a lightweight runtime window.
+            Dim viewer As New Form()
+            viewer.Text = tableName & " " & description & " Data View"
+            viewer.StartPosition = FormStartPosition.CenterScreen
+            viewer.WindowState = FormWindowState.Maximized
 
-        Return True
+            Dim grid As New DataGridView()
+            grid.Dock = DockStyle.Fill
+            grid.AutoGenerateColumns = True
+            grid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+            grid.AllowUserToAddRows = False
+            grid.AllowUserToDeleteRows = enableDeletions
+            grid.ReadOnly = Not enableDeletions
+            grid.DataSource = bs
+
+            viewer.Controls.Add(grid)
+            viewer.Show()
+            Return True
+        Catch ex As Exception
+            MsgBox("Unable to display data view: " & ex.Message, MsgBoxStyle.Exclamation)
+            Return False
+        End Try
     End Function
     Public Function isAuthorizedUser() As Boolean
         Dim sarr As New List(Of String)
