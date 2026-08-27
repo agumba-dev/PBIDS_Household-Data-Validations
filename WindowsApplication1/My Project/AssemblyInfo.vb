@@ -17,7 +17,7 @@ Imports System.Windows.Forms
 ' source file so the application can run either interactively or under the
 ' Windows Service Control Manager without adding another project/file.
 Friend Module Program
-    Private Const ServiceNameValue As String = "PBIDSHouseholdDataValidator"
+    Friend Const ServiceNameValue As String = "PBIDSHouseholdDataValidator"
     Friend Property IsServiceMode As Boolean = False
 
     <STAThread>
@@ -117,7 +117,7 @@ Friend NotInheritable Class PBIDSValidatorService
     Private stopRequested As Boolean
 
     Public Sub New()
-        ServiceName = ServiceNameValue
+        ServiceName = Program.ServiceNameValue
         CanStop = True
         CanPauseAndContinue = False
         AutoLog = True
