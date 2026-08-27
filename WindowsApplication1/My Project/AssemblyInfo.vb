@@ -13,6 +13,23 @@ Imports System.Windows.Forms
 <Assembly: ComVisible(False)>
 <Assembly: Guid("59c15a68-f4dd-4c75-bdbf-04d0c4fb747c")>
 
+' Compatibility for the legacy DgvFilterPopup component. The validator no longer
+' requires the old external DLL; the remaining editor code only assigns a grid.
+Namespace Global.DgvFilterPopup
+    Friend Class DgvFilterManager
+        Public Property DataGridView As System.Windows.Forms.DataGridView
+    End Class
+End Namespace
+
+' SqlProcedureAttribute existed in the .NET Framework SQL-CLR surface but is not
+' supplied by the modern .NET runtime used by this desktop/service application.
+Namespace Global.Microsoft.SqlServer.Server
+    <AttributeUsage(AttributeTargets.Method, AllowMultiple:=False, Inherited:=False)>
+    Public NotInheritable Class SqlProcedureAttribute
+        Inherits Attribute
+    End Class
+End Namespace
+
 ' This project intentionally keeps the Windows Service bootstrap in an existing
 ' source file so the application can run either interactively or under the
 ' Windows Service Control Manager without adding another project/file.
