@@ -312,7 +312,7 @@ Public Class clsResidency
             End Select
 
             Select Case Residencyrecord("seventtype").ToString.ToUpper.Trim
-                Case "TRI", "ENT", "BIR", "ENU"
+                Case "ENT", "BIR", "ENU"
                     If Me.da.GetMatchingStartEndEvent(Residencyrecord("individid").ToString, Residencyrecord("sdate").ToString(), Residencyrecord("seventtype").ToString, 1, 2) Then
                         Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "This Residency record is missing a matching Membership record for this start event", "", Now(), "", village, round)
                         hasError = True
@@ -368,7 +368,7 @@ Public Class clsResidency
             End If
 
             Select Case Residencyrecord("eeventtype").ToString.ToUpper.Trim
-                Case "DTH", "TRO", "EXT"
+                Case "DTH", "EXT"
                     If Me.da.GetMatchingStartEndEvent(Residencyrecord("individid").ToString, Residencyrecord("edate").ToString, _
                                                 Residencyrecord("eeventtype"), 2, 2) Then
                         Me.da.saveError(Residencyrecord("transit_id").ToString.Trim, tablename, "This Residency record is missing a matching Membership record for this end event", "", Now(), "", village, round)

@@ -96,6 +96,57 @@ Public Class clsForeignKeyValidation
                 End If
             End If
 
+            If tablename.Trim.ToLower = "specialstudies.immunize_new_vacc".Trim.ToLower Then
+
+                Dim id As String = ""
+                Dim transit_id As String = ""
+                Dim individid As String = ""
+                Dim vaccine As String = ""
+                Dim vaccineType As String = ""
+                Dim vaccineDose As String = ""
+                Dim visitdate As New Date
+                Dim concatid As String = ""
+                Dim concatid1 As String = ""
+                Dim concatid2 As String = ""
+                id = tempDataRec("immunizeid").ToString.Trim()
+                transit_id = tempDataRec("transit_id").ToString.Trim()
+                vaccine = tempDataRec("Vaccine").ToString.Trim()
+                vaccineType = tempDataRec("VaccineType").ToString.Trim()
+                vaccineDose = tempDataRec("VaccineDose").ToString.Trim()
+                visitdate = tempDataRec("visitdate")
+                concatid = "select count(*) from " + tablename + "  where (immunizeid ='" + id + "' and Vaccine ='" + vaccine + "' and VaccineDose ='" + vaccineDose + "'  and VaccineType ='" + vaccineType + "')"
+                concatid1 = "select count(*) from " + tablename + "  where (immunizeid ='" + id + "' and Vaccine ='" + vaccine + "' and VaccineDose ='" + vaccineDose + "' and VaccineType ='VERBAL')"
+                concatid2 = "select count(*) from " + tablename + "  where (immunizeid ='" + id + "' and Vaccine ='" + vaccine + "' and VaccineDose ='" + vaccineDose + "' and VaccineType ='CARD' and visitdate < '" + visitdate + "')"
+                If Me.da.checkifrecordexists_INMainDB("immunizeid", concatid, tablename) Then
+
+                    Me.da.saveError(tempDataRec("transit_id").ToString, tablename, "immunizeid: immunizeid in specialstudies.immunize_new_vacc table is Duplicate record", "", Now(), "", da.getrecordsCompound("specialstudies.immunize_new_vacc", tempDataRec).Trim, da.getrecordsRound("specialstudies.immunize_new_vacc", tempDataRec).Trim())
+                    Me.da.exec_nonqueryInTEMPDB("UPDATE " + tablename + " SET [errflag] = 'true' , errdate=getdate() where immunizeid ='" + id + "' and transit_id =" + transit_id)
+                    returnValue = False
+
+                    'IF DUPLICATES EXISTS, UPDATE ALL VERBAL TO CARD THEN DELETE
+                ElseIf tempDataRec("VaccineType").ToString.Trim().ToUpper = "CARD" Then
+                    If Me.da.checkifrecordexists_INMainDB("immunizeid", concatid1, tablename) Then
+
+                        'If Me.util.UpdateCompound(tempDataRec) Then
+                        '    'if submitted delete source
+                        '    Me.da.exec_nonqueryInTEMPDB("UPDATE " + tablename + " SET [rec_status] = 'XI' , errdate=getdate() where immunizeid ='" + id + "' and transit_id =" + transit_id)
+
+                        'End If
+
+                        vaccine = tempDataRec("Vaccine").ToString.Trim()
+                    End If
+
+                    'IF DUPLICATES EXISTS, AND TEMP IS VERBAL WHILE MAIN IS CARD THEN DELETE TEMP (handles records when forgot to add immun_summary)
+                ElseIf tempDataRec("VaccineType").ToString.Trim().ToUpper = "VERBAL" Then
+                    If Me.da.checkifrecordexists_INMainDB("immunizeid", concatid2, tablename) Then
+
+                        Me.da.exec_nonqueryInTEMPDB("UPDATE " + tablename + " SET [rec_status] = 'XI' , errdate=getdate() where immunizeid ='" + id + "' and transit_id =" + transit_id)
+
+                    End If
+                End If
+
+            End If
+
         Next
         'If Not worker Is Nothing Then worker.ReportProgress(Nothing, " finished validating foreign key refrences " & tablename & " " & Now.ToString())
         Return returnValue

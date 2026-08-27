@@ -1,12 +1,16 @@
 
 Imports System.Data.SqlClient
-Imports System.Data
+Imports Microsoft.SqlServer
+Imports System.Data.Entity
 Imports Microsoft.SqlServer.Management.Smo
+Imports System.Data
+
 Public Class clsDataAccess
     'Do constructor declaration her
 #Region "Constructors"
     Private Shared objSingle As clsDataAccess
     Private Shared blCreated As Boolean
+
     Public Shared Function getObject() As clsDataAccess
         If blCreated = False Then
             objSingle = New clsDataAccess
@@ -16,6 +20,7 @@ Public Class clsDataAccess
             Return objSingle
         End If
     End Function
+
     Private Sub New()
         'Override the default constructor
     End Sub
@@ -244,14 +249,14 @@ Public Class clsDataAccess
     End Function
 
     'updated now
-    Public Function saveError( _
-                                     ByVal Recordid As String, _
-                                     ByVal tablename As String, _
-                                     ByVal Errortype As String, _
-                                     ByVal Comments As String, _
-                                     ByVal ErrorDate As Date, _
-                                     ByVal QueryRefID As String, _
-                                     ByVal ErrorCompound As String, _
+    Public Function saveError(
+                                     ByVal Recordid As String,
+                                     ByVal tablename As String,
+                                     ByVal Errortype As String,
+                                     ByVal Comments As String,
+                                     ByVal ErrorDate As Date,
+                                     ByVal QueryRefID As String,
+                                     ByVal ErrorCompound As String,
                                       ByVal ErrorRound As String) As Boolean 'ByVal cmd As SqlCommand) As Boolean
 
         If validationtype = mhrsSyncValidationTypes.userpplication Then
@@ -622,10 +627,10 @@ Public Class clsDataAccess
 
 #Region " Validation rules saving"
 
-    Friend Function AddValidationRule( _
-                                         ByVal table_name As String, _
-                                         ByVal table_col As String, _
-                                         ByVal ref_table As String, _
+    Friend Function AddValidationRule(
+                                         ByVal table_name As String,
+                                         ByVal table_col As String,
+                                         ByVal ref_table As String,
                                          ByVal ref_col As String) As Boolean
         Dim newRecord As DataTable = Me.newRecordValuesTable("[dbo].[validationitems]")
         Dim coltype As String = ""
@@ -668,11 +673,11 @@ Public Class clsDataAccess
 #End Region
 
 #Region "other codes"
-    Public Function saveProblem( _
-                                     ByVal Problem_level As String, _
-                                     ByVal Problem_Item As String, _
-                                     ByVal Problem_description As String, _
-                                     ByVal Raised_By As String, _
+    Public Function saveProblem(
+                                     ByVal Problem_level As String,
+                                     ByVal Problem_Item As String,
+                                     ByVal Problem_description As String,
+                                     ByVal Raised_By As String,
                                      ByVal data_error_ID As String) As Boolean
 
         Dim success As Boolean = False
@@ -702,10 +707,10 @@ Public Class clsDataAccess
         Me.clsGlobalVariable.close_HRS_TEMP_DBCon()
         Return success
     End Function
-    Public Function saveSolution( _
-                                   ByVal Problem_ID As String, _
-                                   ByVal Solution_description As String, _
-                                   ByVal problem_fixed As Boolean, _
+    Public Function saveSolution(
+                                   ByVal Problem_ID As String,
+                                   ByVal Solution_description As String,
+                                   ByVal problem_fixed As Boolean,
                                    ByVal SolvedBy As String) As Boolean
         Dim success As Boolean = False
         Dim cmd As New SqlCommand
@@ -941,10 +946,18 @@ Public Class clsDataAccess
         End If
         Return returnValue
     End Function
-   
+
 #End Region
 
 #Region "vincents codes"
+    'Public myServer As Server
+    'Public mytable As Table
+    'Friend mydatabase As Database
+    'Friend conDataCheker As SqlConnection
+    'Public databaseName As String = "TEMP_DSSHRS"
+    'Friend ObjDbAccess As clsdbAccess = clsdbAccess.getObject
+    'Friend mycon As SqlConnection
+
     Public myServer As Server
     Public mytable As Table
     Friend mydatabase As Database
@@ -952,12 +965,17 @@ Public Class clsDataAccess
     Public databaseName As String = "TEMP_DSSHRS"
     Friend ObjDbAccess As clsdbAccess = clsdbAccess.getObject
     Friend mycon As SqlConnection
+
+
     Public Sub initializeServerAndDB()
         myServer = New Server(ObjDbAccess.getServerName.Trim)
         mydatabase = myServer.Databases.Item(databaseName)
         setConnection()
         'servername = myServer.Name
     End Sub
+
+
+
     Friend Sub setConnection()
         Dim sqlServerConStr As String = "Data Source= " & myServer.Name & "; initial catalog= " & mydatabase.Name & "; integrated security=true"
         mycon = New SqlConnection(sqlServerConStr)
@@ -982,7 +1000,7 @@ Public Class clsDataAccess
         Return strServerName
     End Function
     Public Function getTablesToValidate() As DataTable
-        Dim str As String = "SELECT * FROM [dataChecker].[dbo].[TablesTovalidate]'"
+        Dim str As String = "SELECT * FROM [dataChecker].[dbo].[TablesTovalidate]"
         Dim cmd As New SqlCommand(str, conDataCheker)
         If Not conDataCheker.State = ConnectionState.Open Then conDataCheker.Open()
         Dim dt As New DataTable()
@@ -992,8 +1010,8 @@ Public Class clsDataAccess
         conDataCheker.Close()
         Return dt
     End Function
-    Public Function addValidation(ByVal columnname As String, ByVal allowedValues As String, ByVal skiplogic As String, _
-     ByVal errorDescription As String, ByVal ErrorDescSkipLogic As String, ByVal DefaultValue As String, _
+    Public Function addValidation(ByVal columnname As String, ByVal allowedValues As String, ByVal skiplogic As String,
+     ByVal errorDescription As String, ByVal ErrorDescSkipLogic As String, ByVal DefaultValue As String,
      ByVal functionName As String, ByVal validationStatus As String, Optional ByVal validationID As Integer = Nothing) As Boolean
 
         Dim cmd As New SqlCommand()
@@ -1323,20 +1341,47 @@ Public Class clsDataAccess
                     compound = Me.objVal.getIDSubstring(row("observeid").ToString.Trim, idTypes.COMPOUND)
 
                 Case "DSS.LOCATION", "DSS.PREGNANCY", "DSS.OBSERVATION", "DSS.RESIDENCY", "DSS.VISITATION", "SPECIALSTUDIES.HSEDETAILS" _
-                         , "SPECIALSTUDIES.IMMUNIZE", "SPECIALSTUDIES.IMMUNIZE_NEW", "SPECIALSTUDIES.IMMUNIZE_NEW", "SPECIALSTUDIES.ITN", "SPECIALSTUDIES.MORBIDITY", "SPECIALSTUDIES.RELIGION", "MHRS_SYS.CHANGES", "[MHRS_SYS].[CHANGES]", _
-                                        "ghi.Child_health".ToUpper, _
-                    "ghi.family_planning".ToUpper, _
-                    "ghi.ghi_itn".ToUpper, _
-                    "ghi.House_sanitation".ToUpper, _
-                    "ghi.pregnancy_and_Birth".ToUpper, _
-                    "ghi.Relationships".ToUpper, _
-                    "ghi.vct_hiv".ToUpper, _
-                    "PBR.ANC", "PBR.BIRTH_DELIVERY", _
+                         , "SPECIALSTUDIES.IMMUNIZE", "SPECIALSTUDIES.IMMUNIZE_NEW", "SPECIALSTUDIES.IMMUNIZE_NEW_NONVACC", "SPECIALSTUDIES.ITN", "SPECIALSTUDIES.MORBIDITY", "SPECIALSTUDIES.RELIGION", "MHRS_SYS.CHANGES", "[MHRS_SYS].[CHANGES]",
+                                        "ghi.Child_health".ToUpper,
+                    "ghi.family_planning".ToUpper,
+                    "ghi.ghi_itn".ToUpper,
+                    "ghi.House_sanitation".ToUpper,
+                    "ghi.pregnancy_and_Birth".ToUpper,
+                    "ghi.Relationships".ToUpper,
+                    "ghi.vct_hiv".ToUpper,
+                    "PBR.ANC", "PBR.BIRTH_DELIVERY",
                     "bh.BirthHistory".ToUpper
 
                     village = Me.objVal.getIDSubstring(row("locationid").ToString.Trim, idTypes.VILLAGE)
                     compound = Me.objVal.getIDSubstring(row("locationid").ToString.Trim, idTypes.COMPOUND)
 
+                Case "Specialstudies.immunize_new_vacc".ToUpper
+                    Try
+                        cmd.CommandText = "select locationid from DSSHRS.dbo.vCombinedResidency where individid='" & row("individid").ToString & "'" _
+                                            & " and sdate<='" & row("visitdate").ToString & "' AND (edate is null or edate>='" & row("visitdate").ToString & "')"
+                        Dim val As Object = cmd.ExecuteScalar()
+
+                        If val Is Nothing Then
+                        Else
+                            village = cmd.ExecuteScalar().ToString
+                        End If
+
+                        If Not (village Is Nothing Or village.Trim = "") Then
+                            compound = Me.objVal.getIDSubstring(village, idTypes.COMPOUND)
+                            village = Me.objVal.getIDSubstring(village, idTypes.VILLAGE)
+                        Else
+                            Try
+                                compound = row("individid").ToString.Replace("T", "").Trim
+                                compound = compound
+                                compound = Me.objVal.getIDSubstring(compound, idTypes.COMPOUND)
+                                village = Me.objVal.getIDSubstring(compound, idTypes.VILLAGE)
+                            Catch ex As Exception
+
+                            End Try
+                        End If
+                    Catch ex As Exception
+
+                    End Try
 
                 Case "ghi.Toilet".ToUpper, "ghi.Treat_water".ToUpper
 
@@ -1519,64 +1564,34 @@ Public Class clsDataAccess
 
                     village = "W"
                     compound = "W"
-                    'Case ""
-                    '    Try
+                Case "hms.tblscreen".ToUpper, "hms.tblGastro".ToUpper, "hms.tblGeneralIllness".ToUpper, "hms.tblRespiratory".ToUpper, "hms.tblExams".ToUpper
+                    Try
+                        cmd.CommandText = "select locationid from DSSHRS.dbo.vCombinedResidency where individid='" & row("DSSID").ToString & "'" _
+                                            & " and sdate<='" & row("entry_date").ToString & "' AND (edate is null or edate>='" & row("entry_date").ToString & "')"
+                        Dim val As Object = cmd.ExecuteScalar()
 
+                        If val Is Nothing Then
+                        Else
+                            village = cmd.ExecuteScalar().ToString
+                        End If
+                        'village = cmd.ExecuteScalar().ToString
 
-                    '    Dim strParentTbl, strPK_Key As String
-                    '    Select Case tableName.ToLower.Trim
-                    '        Case "specialStudies.bednet_individual_netUse".ToLower.Trim, "specialStudies.bednet_netinfo".ToLower.Trim
-                    '            strParentTbl = "specialstudies.bednet"
-                    '            strPK_Key = "id"
-                    '        Case "specialStudies.HHD_Waterusage".ToLower.Trim, "specialStudies.FetchWater_Member".ToLower.Trim _
-                    '           , "specialStudies.CleanWater_Methods".ToLower.Trim, "specialStudies.WaterAccess_Activities".ToLower.Trim
-                    '            strParentTbl = "specialstudies.WaterAccess"
-                    '            strPK_Key = "wateraccessID"
-                    '        Case "specialStudies.LiveStock".ToLower.Trim, "specialStudies.Cropgrown".ToLower.Trim
-                    '            strParentTbl = "specialstudies.Crop_Live_production"
-                    '            strPK_Key = "Crop_Live_ProductionID"
-                    '        Case "MS.WASHLatrine".ToLower.Trim, "MS.WASHContainers".ToLower.Trim
-                    '            strParentTbl = "MS.WASHSCHOOL"
-                    '            strPK_Key = "wschid"
-                    '    End Select
+                        If Not (village Is Nothing Or village.Trim = "") Then
+                            compound = Me.objVal.getIDSubstring(village, idTypes.COMPOUND)
+                            village = Me.objVal.getIDSubstring(village, idTypes.VILLAGE)
+                        Else
+                            Try
+                                compound = row("DSSID").ToString.Replace("T", "").Trim
+                                compound = compound
+                                compound = Me.objVal.getIDSubstring(compound, idTypes.COMPOUND)
+                                village = Me.objVal.getIDSubstring(compound, idTypes.VILLAGE)
+                            Catch ex As Exception
 
-                    '    'check to ensure that the  parent record have all gone to the main databse
-                    '    If tableName.ToLower.Trim.Equals("specialStudies.bednet_individual_netUse".ToLower.Trim) Or _
-                    '        tableName.ToLower.Trim.Equals("specialStudies.bednet_netinfo".ToLower.Trim) Or _
-                    '        tableName.ToLower.Trim.Equals("SpecialStudies.WaterAccess_Activities".ToLower.Trim) Or _
-                    '        tableName.ToLower.Trim.Equals("specialStudies.HHD_Waterusage".ToLower.Trim) Or _
-                    '        tableName.ToLower.Trim.Equals("specialStudies.FetchWater_Member".ToLower.Trim) Or _
-                    '        tableName.ToLower.Trim.Equals("specialStudies.CleanWater_Methods".ToLower.Trim) Or _
-                    '        tableName.ToLower.Trim.Equals("MS.WASHLatrine".ToLower.Trim) Or _
-                    '        tableName.ToLower.Trim.Equals("MS.WASHContainers".ToLower.Trim) Then
+                            End Try
+                        End If
+                    Catch ex As Exception
 
-
-                    '        'check to see if the recorded has a parent 
-                    '        Dim cmd As New SqlCommand
-                    '        'cmd.CommandType = CommandType.StoredProcedure
-                    '        cmd.Connection = Me.clsGlobalVariable.HRS_Temp_DBCon
-                    '        If Not Me.clsGlobalVariable.HRS_Temp_DBCon.State = ConnectionState.Open Then Me.clsGlobalVariable.HRS_Temp_DBCon.Open()
-                    '        cmd.CommandText = "[DSSHRS].[dbo].[getParentRecords]  @tblParent,@tblChild,@tblTransit_id,@strPrimaryKey"
-                    '        cmd.Parameters.Clear()
-                    '        cmd.Parameters.AddWithValue("@tblParent", strParentTbl)
-                    '        cmd.Parameters.AddWithValue("@tblChild", tableName.ToLower)
-                    '        cmd.Parameters.AddWithValue("@tblTransit_id", row("transit_id"))
-                    '        cmd.Parameters.AddWithValue("strPrimaryKey", strPK_Key)
-
-                    '        Me.clsGlobalVariable.open_HRS_TEMP_DBCon()
-
-                    '        Dim newValue As Integer
-                    '        newValue = cmd.ExecuteScalar()
-
-                    '        If newValue = 0 Then
-                    '            Return False
-                    '        End If
-                    '        Me.clsGlobalVariable.HRS_Temp_DBCon.Close()
-                    '    End If
-                    'Catch ex As Exception
-                    '    objRef.strObjMethod = New Diagnostics.StackTrace().ToString()
-
-                    'End Try
+                    End Try
 
                 Case "DSS.CONSENTS"
                 Case "DSS.EVENTS_EPISODES"
@@ -1686,13 +1701,13 @@ Public Class clsDataAccess
                     compound = Me.objVal.getIDSubstring(indi, idTypes.COMPOUND)
 
                 Case "DSS.LOCATION", "DSS.PREGNANCY", "DSS.OBSERVATION", "DSS.RESIDENCY", "DSS.VISITATION", "SPECIALSTUDIES.HSEDETAILS" _
-                         , "SPECIALSTUDIES.IMMUNIZE", "SPECIALSTUDIES.ITN", "SPECIALSTUDIES.MORBIDITY", "SPECIALSTUDIES.RELIGION", "MHRS_SYS.CHANGES", "[MHRS_SYS].[CHANGES]", _
-                                             "ghi.Child_health".ToUpper, _
-                    "ghi.family_planning".ToUpper, _
-                    "ghi.ghi_itn".ToUpper, _
-                    "ghi.House_sanitation".ToUpper, _
-                    "ghi.pregnancy_and_Birth".ToUpper, _
-                    "ghi.Relationships".ToUpper, _
+                         , "SPECIALSTUDIES.IMMUNIZE", "SPECIALSTUDIES.ITN", "SPECIALSTUDIES.MORBIDITY", "SPECIALSTUDIES.RELIGION", "MHRS_SYS.CHANGES", "[MHRS_SYS].[CHANGES]",
+                                             "ghi.Child_health".ToUpper,
+                    "ghi.family_planning".ToUpper,
+                    "ghi.ghi_itn".ToUpper,
+                    "ghi.House_sanitation".ToUpper,
+                    "ghi.pregnancy_and_Birth".ToUpper,
+                    "ghi.Relationships".ToUpper,
                     "ghi.vct_hiv".ToUpper
 
 
@@ -1923,12 +1938,26 @@ Public Class clsDataAccess
                         round = cmd.ExecuteScalar()
                     End If
                 Case "specialstudies.ses", "specialstudies.religion", "specialstudies.parentsurv", "specialstudies.morbidity" _
-                  , "specialstudies.itn", "specialstudies.immunize", "specialstudies.immunize_new", "specialstudies.immunize_new", "specialstudies.huas_lite", "specialstudies.hsedetails" _
+                  , "specialstudies.itn", "specialstudies.immunize", "specialstudies.immunize_new", "specialstudies.immunize_new_nonvacc", "specialstudies.huas_lite", "specialstudies.hsedetails" _
                  , "specialstudies.health", "specialstudies.gpsdata" _
                   , "specialstudies.druguse", "specialstudies.dmicampaign", "specialstudies.contraception" _
-                 , "dss.compadmin", "dss.observation", "dss.socialgroupadmin", "dss.visitation", _
+                 , "dss.compadmin", "dss.observation", "dss.socialgroupadmin", "dss.visitation",
                     "PBR.ANC".ToLower.Trim, "PBR.BIRTH_DELIVERY".ToLower.Trim
                     round = row("round").ToString.Trim
+
+                Case "SpecialStudies.immunize_new_vacc".ToLower.Trim
+                    Try
+                        cmd.CommandText = "SELECT DSSHRS.dbo.get_Round2(visitdate) from " & tableName & " where transit_id ='" & row("transit_id").ToString & "'"
+                        i = cmd.ExecuteScalar().ToString
+                        If i Is Nothing Then
+                            round = ""
+                        Else
+                            round = i
+                        End If
+                    Catch ex As Exception
+
+                    End Try
+
 
 
                 Case "dss.compounds", "dss.location", "dss.socialgroup"
@@ -1944,14 +1973,14 @@ Public Class clsDataAccess
 
 
 
-                Case "ghi.Child_health".ToLower.Trim, _
-                    "ghi.family_planning".ToLower.Trim, _
-                    "ghi.ghi_itn".ToLower.Trim, _
-                    "ghi.House_sanitation".ToLower.Trim, _
-                    "ghi.pregnancy_and_Birth".ToLower.Trim, _
-                    "ghi.Relationships".ToLower.Trim, _
-                    "ghi.vct_hiv".ToLower.Trim, _
-                    "Specialstudies.waterAccess".ToLower, _
+                Case "ghi.Child_health".ToLower.Trim,
+                    "ghi.family_planning".ToLower.Trim,
+                    "ghi.ghi_itn".ToLower.Trim,
+                    "ghi.House_sanitation".ToLower.Trim,
+                    "ghi.pregnancy_and_Birth".ToLower.Trim,
+                    "ghi.Relationships".ToLower.Trim,
+                    "ghi.vct_hiv".ToLower.Trim,
+                    "Specialstudies.waterAccess".ToLower,
                     "bh.BirthHistory".ToLower.Trim, "bh.Children".ToLower.Trim
 
                     round = row("round").ToString
@@ -2108,6 +2137,26 @@ Public Class clsDataAccess
                     End Try
                 Case "Radio.prevention_practice".ToLower
                     round = "20123"
+
+                'Case "HMS.tblFacility".ToLower.Trim, "HMS.tblFacilityAdmit".ToLower.Trim, "HMS.tblGastro".ToLower.Trim, "HMS.tblRespiratory".ToLower.Trim, "HMS.tblGeneralIllness".ToLower.Trim, "HMS.tblExams".ToLower.Trim, "HMS.tblScreen".ToLower.Trim
+                '    round = "20152"
+                '    If row("entry_date") <= "2016-01-23 00:00:00.000" Then
+                '        round = "20152"
+                '    Else
+                '        round = "20161"
+                '    End If
+                Case "HMS.tblFacility".ToLower.Trim, "HMS.tblFacilityAdmit".ToLower.Trim, "HMS.tblGastro".ToLower.Trim, "HMS.tblRespiratory".ToLower.Trim, "HMS.tblGeneralIllness".ToLower.Trim, "HMS.tblExams".ToLower.Trim, "HMS.tblScreen".ToLower.Trim
+                    Try
+                        cmd.CommandText = "SELECT DSSHRS.dbo.get_Round2(entry_date) from " & tableName & " where transit_id ='" & row("transit_id").ToString & "'"
+                        i = cmd.ExecuteScalar().ToString
+                        If i Is Nothing Then
+                            round = ""
+                        Else
+                            round = i
+                        End If
+                    Catch ex As Exception
+
+                    End Try
 
 
             End Select
@@ -2282,11 +2331,11 @@ ExitPoint:
     End Function
     Public Function CheckSexforSpouse(individid As String, episodeid As String) As Boolean
         Dim returnValue As Boolean = True
-        Dim sql As String = "SELECT     marr.individid, marr.episodeid, marrindi.gender, spouse.individid AS spouseid, spouse.gender AS spousegender, marr.observeid " & _
-"FROM         DSS.marriage AS marr INNER JOIN " & _
-"                       DSSHRS.[dbo].[vCombinedIndividuals] AS marrindi ON marr.individid = marrindi.individid LEFT OUTER JOIN " & _
-"                       DSSHRS.[dbo].[vCombinedIndividuals] AS spouse ON marr.spouseid = spouse.individid " & _
-"WHERE     ((ISNULL(spouse.gender, '') = marrindi.gender) OR  " & _
+        Dim sql As String = "SELECT     marr.individid, marr.episodeid, marrindi.gender, spouse.individid AS spouseid, spouse.gender AS spousegender, marr.observeid " &
+"FROM         DSS.marriage AS marr INNER JOIN " &
+"                       DSSHRS.[dbo].[vCombinedIndividuals] AS marrindi ON marr.individid = marrindi.individid LEFT OUTER JOIN " &
+"                       DSSHRS.[dbo].[vCombinedIndividuals] AS spouse ON marr.spouseid = spouse.individid " &
+"WHERE     ((ISNULL(spouse.gender, '') = marrindi.gender) OR  " &
 "                      (marr.individid = marr.spouseid)) and marr.individid ='" & individid.Trim & "' and marr.episodeid='" & episodeid.Trim & "'  "
         If Me.executeScalar_INMainDB(sql) > 0 Then
             returnValue = True
@@ -2320,6 +2369,6 @@ ExitPoint:
     End Function
 #End Region
 
-   
+
 
 End Class

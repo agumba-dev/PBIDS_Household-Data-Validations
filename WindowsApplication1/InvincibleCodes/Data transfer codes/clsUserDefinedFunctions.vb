@@ -1,13 +1,12 @@
 Imports System
 Imports System.Data
-Imports System.Data.SqlClient
-Imports System.Data.SqlTypes
 Imports Microsoft.SqlServer.Server
+
 
 Partial Public Class clsUserDefinedFunctions
 #Region "ID validations"
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-       Public Shared Function isValidObservationid(ByVal observeid As String) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function isValidObservationid(ByVal observeid As String) As Boolean
         ' Add your code here
         Dim result As Boolean = False
         Dim parts() As String = observeid.Split("-")
@@ -24,8 +23,8 @@ Partial Public Class clsUserDefinedFunctions
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-       Public Shared Function isValidIndividid(ByVal individid As String) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function isValidIndividid(ByVal individid As String) As Boolean
         ' Add your code here
         Dim result As Boolean = False
         Dim parts() As String = individid.Split("-")
@@ -45,7 +44,7 @@ Partial Public Class clsUserDefinedFunctions
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function isValidcompoundid(ByVal compoundid As String) As Boolean
         ' Add your code here
         Dim result As Boolean = False
@@ -66,8 +65,8 @@ Partial Public Class clsUserDefinedFunctions
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-   Public Shared Function isValidLocationid(ByVal locationid As String) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function isValidLocationid(ByVal locationid As String) As Boolean
         ' Add your code here
         Dim result As Boolean = False
         Dim parts() As String = locationid.Split("-")
@@ -88,8 +87,8 @@ Partial Public Class clsUserDefinedFunctions
         Return result
     End Function
 
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-  Public Shared Function isValidsocialGroupid(ByVal socialgroupid As String) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function isValidsocialGroupid(ByVal socialgroupid As String) As Boolean
         ' Add your code here
         Dim result As Boolean = False
         Dim parts() As String = socialgroupid.Split("-")
@@ -109,8 +108,8 @@ Partial Public Class clsUserDefinedFunctions
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-Public Shared Function isValidRound(ByVal round As String) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function isValidRound(ByVal round As String) As Boolean
         ' Add your code here
         Dim result As Boolean = False
         If round.Trim.Length = 5 Then
@@ -120,8 +119,8 @@ Public Shared Function isValidRound(ByVal round As String) As Boolean
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
         ' Add your code here
         Dim result As Boolean = False
         If villcode.Trim.Length = 3 Then
@@ -134,7 +133,7 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
 #End Region
 #Region "ID conversion"
     'villcode
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function get_villcode(ByVal oldvillcode As String) As String
         If oldvillcode Is Nothing Then
             Return "Q" 'Nothing
@@ -149,7 +148,7 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
         Return result.ToString
     End Function
     'compoundid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function get_compoundid(ByVal oldcompoundid As String) As String
         ' Add your code herer
         If oldcompoundid Is Nothing Then
@@ -166,8 +165,8 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
         Return result
     End Function
     'locationid 
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-        Public Shared Function get_locationid(ByVal oldlocationid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function get_locationid(ByVal oldlocationid As String) As String
         ' Add your code herer
         If (oldlocationid Is Nothing) Then
             Return "Q" 'Nothing
@@ -187,8 +186,8 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
 
     End Function
     'socialgroupid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-       Public Shared Function get_socialgroupid(ByVal oldsocialgroupid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function get_socialgroupid(ByVal oldsocialgroupid As String) As String
 
         If (oldsocialgroupid Is Nothing) Then
             Return "Q" 'Nothing
@@ -213,8 +212,8 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
         Return result
     End Function
     'individualid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-        Public Shared Function get_individualid(ByVal oldindividualid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function get_individualid(ByVal oldindividualid As String) As String
         If (oldindividualid Is Nothing) Then
             Return "Q" 'Nothing
         ElseIf (oldindividualid.Trim = "") Then
@@ -237,7 +236,7 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
         Return result
     End Function
     'observationid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function get_observationid(ByVal oldobservationid As String) As String
         If (oldobservationid = Nothing) Then
             Return Nothing
@@ -268,8 +267,8 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
         Return result
     End Function
     'getcompound from locationid ,getcompound_from_locationid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-  Public Shared Function getcompound_from_locationid(ByVal locationid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getcompound_from_locationid(ByVal locationid As String) As String
         If locationid Is Nothing Then
             Return Nothing
         End If
@@ -283,8 +282,8 @@ Public Shared Function isValidVillcode(ByVal villcode As String) As Boolean
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-Public Shared Function getOldIndividid(ByVal individid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getOldIndividid(ByVal individid As String) As String
         ' Add your code here
         If isValidIndividid(individid) Then
             Dim parts() As String = individid.Split("-"c)
@@ -297,8 +296,8 @@ Public Shared Function getOldIndividid(ByVal individid As String) As String
             Return individid
         End If
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-Public Shared Function getOldLocationid(ByVal locationid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getOldLocationid(ByVal locationid As String) As String
         ' Add your code here
         If isValidLocationid(locationid) Then
             Dim parts() As String = locationid.Split("-"c)
@@ -311,8 +310,8 @@ Public Shared Function getOldLocationid(ByVal locationid As String) As String
             Return locationid
         End If
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-Public Shared Function getOldSocialGroupid(ByVal socialgrpid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getOldSocialGroupid(ByVal socialgrpid As String) As String
         ' Add your code here
         If isValidsocialGroupid(socialgrpid) Then
             Dim parts() As String = socialgrpid.Split("-"c)
@@ -325,8 +324,8 @@ Public Shared Function getOldSocialGroupid(ByVal socialgrpid As String) As Strin
             Return socialgrpid
         End If
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         ' Add your code here
         If isValidcompoundid(compoundid) Then
             Dim parts() As String = compoundid.Split("-"c)
@@ -339,8 +338,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
             Return compoundid
         End If
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-     Public Shared Function convert242Observedid(ByVal observeid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function convert242Observedid(ByVal observeid As String) As String
         If observeid Is Nothing Then
             Return Nothing
         End If
@@ -359,8 +358,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         Return result
     End Function
     'getcompound from locationid ,getcompound_from_locationid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-  Public Shared Function getcompoundNUM_from_compound(ByVal compoundid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getcompoundNUM_from_compound(ByVal compoundid As String) As String
         If compoundid Is Nothing Then
             Return Nothing
         End If
@@ -375,8 +374,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         Return result
     End Function
     'getcompound from locationid ,getcompound_from_locationid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-  Public Shared Function getlocation_from_observationid(ByVal observationid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getlocation_from_observationid(ByVal observationid As String) As String
         If observationid Is Nothing Then
             Return Nothing
         End If
@@ -390,7 +389,7 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function getRound_from_observationid(ByVal observationid As String) As String
         If observationid Is Nothing Then
             Return Nothing
@@ -405,8 +404,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-        Public Shared Function getLocationSeq_from_locationid(ByVal locationid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getLocationSeq_from_locationid(ByVal locationid As String) As String
         If locationid Is Nothing Then
             Return Nothing
         End If
@@ -421,8 +420,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         Return result
     End Function
 
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-   Public Shared Function getcompound_from_observationid(ByVal observationid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getcompound_from_observationid(ByVal observationid As String) As String
         If observationid Is Nothing Then
             Return Nothing
         End If
@@ -437,8 +436,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
 
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-   Public Shared Function getVillage_from_observationid(ByVal observationid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getVillage_from_observationid(ByVal observationid As String) As String
         If observationid Is Nothing Then
             Return Nothing
         End If
@@ -452,7 +451,7 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()>
     Public Shared Function removeSpaceInIDs(ByVal id As String) As String
         ' Add your code here
         Dim result As String = Nothing
@@ -468,7 +467,7 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         End If
         Return result
     End Function
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function toDouble(ByVal txtvalue As String) As String
         ' Add your code here
         Dim result As String = Nothing
@@ -481,14 +480,14 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
     End Function
 #End Region
 #Region "OTHER"
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-      Public Shared Function getlatestResidency(ByVal sqlquery As String) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function getlatestResidency(ByVal sqlquery As String) As Boolean
         ' Add your code here
 
         Return True
     End Function
-    <Microsoft.SqlServer.Server.SqlProcedure()> _
-     Public Shared Sub tableRecordCount(ByVal tabl As String)
+    <Microsoft.SqlServer.Server.SqlProcedure()>
+    Public Shared Sub tableRecordCount(ByVal tabl As String)
         ' Add your code here
         Using connection As New SqlConnection("context connection=true")
             'SqlContext.Pipe.Send("Hello world! It's now " & System.DateTime.Now.ToString() & "\n")
@@ -504,8 +503,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
             'SqlContext.Pipe.ExecuteAndSend(com)
         End Using
     End Sub
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-      Public Shared Function meetsFourMonthsRule(ByVal lastSdate As Date, ByVal currentEventdate As Date) As Boolean
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function meetsFourMonthsRule(ByVal lastSdate As Date, ByVal currentEventdate As Date) As Boolean
         If lastSdate = Nothing Or currentEventdate = Nothing Then
             Return True
         Else
@@ -518,7 +517,7 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
                     Return True
                 End If
             End If
-            
+
         End If
     End Function
     Private Function ageDiff(ByVal indrec As DataRow, ByVal parDOB As Date) As Integer
@@ -527,7 +526,7 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
     End Function
 #End Region
 #Region "changes"
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '  '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function get_IndivChanges(ByVal indichangeCode As String) As String
 
         Dim result As String = Nothing
@@ -599,8 +598,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
     End Function
 
 
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-       Public Shared Function get_compoundChange(ByVal compHHchangeCode As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function get_compoundChange(ByVal compHHchangeCode As String) As String
 
         If compHHchangeCode = "42" Then 'signifies social group administrator change
             'check if the admin is amember of that social group
@@ -615,7 +614,7 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
         Return ""
     End Function
 
-    <Microsoft.SqlServer.Server.SqlFunction()> _
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
     Public Shared Function get_Round(ByVal entrydate As Date) As String
         Select Case entrydate.Month
             Case 1, 2, 3, 4
@@ -630,8 +629,8 @@ Public Shared Function getOldCompoundid(ByVal compoundid As String) As String
 #End Region
 #Region "QC"
     'getcompound from locationid ,getcompound_from_locationid
-    <Microsoft.SqlServer.Server.SqlFunction()> _
-  Public Shared Function get_nextidafternext(ByVal individid As String) As String
+    '<Microsoft.SqlServer.Server.SqlFunction()> _
+    Public Shared Function get_nextidafternext(ByVal individid As String) As String
         If individid Is Nothing Then
             Return Nothing
         End If

@@ -46,43 +46,43 @@ Partial Class Form1
         '
         Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.TheInvincibleToolStripMenuItem, Me.EditValidationsToolStripMenuItem, Me.DataEditorToolStripMenuItem, Me.EditConfigToolStripMenuItem, Me.RefValidationsToolStripMenuItem, Me.SqlWindowToolStripMenuItem})
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
-        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(35, 20)
+        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
         Me.FileToolStripMenuItem.Text = "File"
         '
         'TheInvincibleToolStripMenuItem
         '
         Me.TheInvincibleToolStripMenuItem.Name = "TheInvincibleToolStripMenuItem"
-        Me.TheInvincibleToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.TheInvincibleToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.TheInvincibleToolStripMenuItem.Text = "TheInvincible"
         '
         'EditValidationsToolStripMenuItem
         '
         Me.EditValidationsToolStripMenuItem.Name = "EditValidationsToolStripMenuItem"
-        Me.EditValidationsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.EditValidationsToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.EditValidationsToolStripMenuItem.Text = "Edit Validations"
         '
         'DataEditorToolStripMenuItem
         '
         Me.DataEditorToolStripMenuItem.Name = "DataEditorToolStripMenuItem"
-        Me.DataEditorToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.DataEditorToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.DataEditorToolStripMenuItem.Text = "Data Editor"
         '
         'EditConfigToolStripMenuItem
         '
         Me.EditConfigToolStripMenuItem.Name = "EditConfigToolStripMenuItem"
-        Me.EditConfigToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.EditConfigToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.EditConfigToolStripMenuItem.Text = "Edit Config"
         '
         'RefValidationsToolStripMenuItem
         '
         Me.RefValidationsToolStripMenuItem.Name = "RefValidationsToolStripMenuItem"
-        Me.RefValidationsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.RefValidationsToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.RefValidationsToolStripMenuItem.Text = "ref validations"
         '
         'SqlWindowToolStripMenuItem
         '
         Me.SqlWindowToolStripMenuItem.Name = "SqlWindowToolStripMenuItem"
-        Me.SqlWindowToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.SqlWindowToolStripMenuItem.Size = New System.Drawing.Size(154, 22)
         Me.SqlWindowToolStripMenuItem.Text = "sql Window"
         '
         'Form1

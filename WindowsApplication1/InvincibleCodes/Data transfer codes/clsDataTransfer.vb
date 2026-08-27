@@ -896,86 +896,96 @@ Public Class clsDataTransfer
     'SpecialStudies.parentsurv
     'SpecialStudies.Religion
     '            "SpecialStudies.immunize", _
-    Private specialStudies As String() = _
-            { _
-            "DSS.visitation", _
-            "SpecialStudies.health", _
-            "SpecialStudies.GPSDATA", _
-            "SpecialStudies.hsedetails", _
-            "SpecialStudies.HUAS_LITE", _
-            "SpecialStudies.ses", _
-            "SpecialStudies.education", _
-            "SpecialStudies.itn", _
-            "SpecialStudies.morbidity", _
-            "SpecialStudies.parentsurv", _
-            "SpecialStudies.circumcision", _
-            "specialstudies.druguse", _
-            "specialstudies.contraception", _
-            "specialstudies.dmicampaign", _
-            "specialstudies.Reprodactivehealth", _
-            "specialstudies.mobilephoneusage", _
-            "specialstudies.stove", _
-            "SpecialStudies.Religion", _
-            "ghi.Toilet", _
-            "ghi.pregnancy_and_Birth", _
-            "ghi.House_sanitation", _
-            "ghi.Child_health", _
-            "ghi.ghi_itn", _
-            "ghi.family_planning", _
-            "ghi.vct_hiv", _
-            "ghi.Relationships", _
-            "ghi.Diarrhea_treat", _
-            "ghi.fp_current_use", _
-            "ghi.Fever_treatment", _
-            "ghi.fever_other", _
-            "ghi.Fever_drug", _
-            "ghi.baby_drink", _
-            "ghi.anc_place", _
-            "ghi.afterdelivery_service", _
-            "ghi.Treat_water", _
-            "specialstudies.bednet", _
-            "specialstudies.bednet_individual_netUse", _
-            "specialstudies.bednet_netinfo", _
-            "specialStudies.BreastFeedingKnowledge", _
-            "specialStudies.LiveStock", _
-            "specialStudies.Cropgrown", _
-            "specialstudies.Crop_Live_production", _
-            "specialStudies.HHD_Waterusage", _
-            "specialStudies.FetchWater_Member", _
-            "specialStudies.WaterAccess", _
-            "specialStudies.WaterAccess_Activities", _
-            "specialStudies.CleanWater_Methods", _
-            "specialStudies.Income", _
-            "specialStudies.FoodFreq", _
-            "specialStudies.FoodSecurity", _
-            "MS.WASHSCHOOL", _
-            "MS.WASHLatrine", _
-            "MS.WASHContainers", _
-            "MS.WASHLatrineHome", _
-            "MS.WASHContainersHome", _
-            "MS.PEDSQL23", _
-            "MS.PEDSQL7", _
-            "MS.WASHHOME", _
-            "MS.ENROLLMENT", _
-            "MS.CLIPBOARD", _
-            "MS.CONSENT", _
-            "MS.ENROLLMENT", _
-            "MS.MS_MEMBERSHIP", _
-            "MS.WASHFollowUp", _
-            "SpecialStudies.EVP", _
-            "SpecialStudies.EVP_Anthropometric", _
-            "SpecialStudies.EVPinterviewOutcome", _
-            "SpecialStudies.immunize", _
-            "SpecialStudies.immunize_new", _
-            "SpecialStudies.SocialGroupSurvey", _
-            "BH.BIRTHHISTORY", _
-            "BH.CHILDREN", _
-            "PBR.ANC", _
-            "PBR.Birth_Delivery", _
-            "PBR.afterdelivery_service", _
-            "PBR.anc", _
-            "PBR.anc_place", _
-            "radio.prevention_practice", "radio.listening", "radio.influenza"}
+    Private specialStudies As String() =
+            {
+            "DSS.visitation",
+            "SpecialStudies.health",
+            "SpecialStudies.GPSDATA",
+            "SpecialStudies.hsedetails",
+            "SpecialStudies.HUAS_LITE",
+            "SpecialStudies.ses",
+            "SpecialStudies.education",
+            "SpecialStudies.itn",
+            "SpecialStudies.morbidity",
+            "SpecialStudies.parentsurv",
+            "SpecialStudies.circumcision",
+            "specialstudies.druguse",
+            "specialstudies.contraception",
+            "specialstudies.dmicampaign",
+            "specialstudies.Reprodactivehealth",
+            "specialstudies.mobilephoneusage",
+            "specialstudies.stove",
+            "SpecialStudies.Religion",
+            "ghi.Toilet",
+            "ghi.pregnancy_and_Birth",
+            "ghi.House_sanitation",
+            "ghi.Child_health",
+            "ghi.ghi_itn",
+            "ghi.family_planning",
+            "ghi.vct_hiv",
+            "ghi.Relationships",
+            "ghi.Diarrhea_treat",
+            "ghi.fp_current_use",
+            "ghi.Fever_treatment",
+            "ghi.fever_other",
+            "ghi.Fever_drug",
+            "ghi.baby_drink",
+            "ghi.anc_place",
+            "ghi.afterdelivery_service",
+            "ghi.Treat_water",
+            "specialstudies.bednet",
+            "specialstudies.bednet_individual_netUse",
+            "specialstudies.bednet_netinfo",
+            "specialStudies.BreastFeedingKnowledge",
+            "specialStudies.LiveStock",
+            "specialStudies.Cropgrown",
+            "specialstudies.Crop_Live_production",
+            "specialStudies.HHD_Waterusage",
+            "specialStudies.FetchWater_Member",
+            "specialStudies.WaterAccess",
+            "specialStudies.WaterAccess_Activities",
+            "specialStudies.CleanWater_Methods",
+            "specialStudies.Income",
+            "specialStudies.FoodFreq",
+            "specialStudies.FoodSecurity",
+            "MS.WASHSCHOOL",
+            "MS.WASHLatrine",
+            "MS.WASHContainers",
+            "MS.WASHLatrineHome",
+            "MS.WASHContainersHome",
+            "MS.PEDSQL23",
+            "MS.PEDSQL7",
+            "MS.WASHHOME",
+            "MS.ENROLLMENT",
+            "MS.CLIPBOARD",
+            "MS.CONSENT",
+            "MS.ENROLLMENT",
+            "MS.MS_MEMBERSHIP",
+            "MS.WASHFollowUp",
+            "SpecialStudies.EVP",
+            "SpecialStudies.EVP_Anthropometric",
+            "SpecialStudies.EVPinterviewOutcome",
+            "SpecialStudies.immunize",
+            "SpecialStudies.immunize_new",
+            "SpecialStudies.immunize_new_nonvacc",
+            "SpecialStudies.immunize_new_vacc",
+            "SpecialStudies.SocialGroupSurvey",
+            "BH.BIRTHHISTORY",
+            "BH.CHILDREN",
+            "PBR.ANC",
+            "PBR.Birth_Delivery",
+            "PBR.afterdelivery_service",
+            "PBR.anc",
+            "PBR.anc_place",
+            "radio.prevention_practice", "radio.listening", "radio.influenza",
+            "HMS.tblScreen",
+            "HMS.tblExams",
+            "HMS.tblFacility",
+            "HMS.tblFacilityAdmit",
+            "HMS.tblGastro",
+            "HMS.tblGeneralIllness",
+            "HMS.tblRespiratory",
+            "HMS.covid_vaccine"}
 
     Private Function transfer_specialStudies() As String
         Dim str As String = vbCrLf
@@ -1280,6 +1290,7 @@ Public Class clsDataTransfer
             Case datalevel.TEMP_DSSHRS
                 table = Me.da.getTableDataFromMAINDB("SELECT [disable_script],[enable_script]FROM [TEMP_DSSHRS].[dbo].[TriggerControl]")
         End Select
+
         For Each obj As DataRow In table.Rows
             If toenable Then
                 If dblevel = datalevel.DSSHRS Then
@@ -2021,6 +2032,9 @@ Public Class clsDataTransfer
                         Case "MS.WASHLatrine".ToLower.Trim, "MS.WASHContainers".ToLower.Trim
                             strParentTbl = "MS.WASHSCHOOL"
                             strPK_Key = "wschid"
+                        Case "HMS.tblFacility".ToLower.Trim, "HMS.tblFacilityAdmit".ToLower.Trim, "HMS.tblGastro".ToLower.Trim, "HMS.tblRespiratory".ToLower.Trim, "HMS.tblGeneralIllness".ToLower.Trim, "HMS.covid_vaccine".ToLower.Trim, "tblExams".ToLower.Trim
+                            strParentTbl = "HMS.TBLSCREEN"
+                            strPK_Key = "InterviewPK"
                     End Select
 
                     'check to ensure that the  parent record have all gone to the main databse

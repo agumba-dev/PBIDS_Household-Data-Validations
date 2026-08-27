@@ -1,10 +1,7 @@
-Imports System
-Imports System.Collections.Generic
+
 Imports System.Data
-Imports System.Data.Sql
 Imports System.Data.SqlClient
-Imports System.Data.Odbc
-Imports System.Windows.Forms
+
 
 Public Class clsdbAccess
 

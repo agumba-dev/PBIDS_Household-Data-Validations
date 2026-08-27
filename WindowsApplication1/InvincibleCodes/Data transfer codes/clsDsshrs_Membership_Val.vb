@@ -399,7 +399,7 @@ Public Class clsDsshrs_Membership_Val
         Dim returnValue As Boolean = True
         Dim sql As String = "SELECT count(*)  FROM [DSSHRS].[DSS].[membership]" _
                             & "where (eeventtype='DTH') and (individid='" + Membershiprecord("individid").ToString + "')" _
-                            & " AND (DATEDIFF(day,[edate],getdate())>=DATEDIFF(day,@eventdate,getdate()))"
+                            & " AND (DATEDIFF(day,'" & Membershiprecord("edate") & "',getdate())>=DATEDIFF(day,@eventdate,getdate()))"
         If Me.da.hadprevioslyDied(sql, Membershiprecord("sdate")) > 0 Then
             returnValue = True
         Else

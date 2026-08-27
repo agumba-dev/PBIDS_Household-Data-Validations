@@ -27,3 +27,30 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 *.vssscc
 $tf*/
+# Visual Studio
+.vs/
+**/.vs/
+
+# Build output
+bin/
+obj/
+Debug/
+Release/
+publish/
+
+# NuGet restored packages
+packages/
+
+# Certificates / keys
+*.pfx
+*.p12
+*.key
+
+# Office temporary files
+~$*
+
+# User-specific Visual Studio files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

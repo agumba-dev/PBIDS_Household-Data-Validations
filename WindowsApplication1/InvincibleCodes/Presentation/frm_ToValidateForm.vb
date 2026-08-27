@@ -1,6 +1,7 @@
 Imports System.Data.SqlClient
 Imports Microsoft.SqlServer.Management.Smo
 Imports DgvFilterPopup
+Imports System.Data
 
 Public Class frm_ToValidateForm
 
@@ -241,7 +242,7 @@ Public Class frm_ToValidateForm
     ''' <param name="displayerrormessage"></param>
     ''' <returns></returns>
     ''' <remarks></remarks>
-    Public Function getRowValidations(ByVal schemaName As String, ByVal tablename As String, ByVal record As DataRow, _
+    Public Function getRowValidations(ByVal schemaName As String, ByVal tablename As String, ByVal record As DataRow,
     Optional ByVal clmName As DataColumn = Nothing, Optional ByVal displayerrormessage As Boolean = False) As Boolean
         'for each column in the row get all the validations for it
         Dim validRecord As Boolean = True
@@ -426,7 +427,7 @@ Public Class frm_ToValidateForm
         Dim intarr As String() = value.Split("-"c)
         Return intarr
     End Function
-    Private Function validateColumnValue(ByVal validations As DataRow, ByVal record As DataRow, ByVal clmn As DataColumn, _
+    Private Function validateColumnValue(ByVal validations As DataRow, ByVal record As DataRow, ByVal clmn As DataColumn,
                                                 ByVal tablename As String) As Integer
 
         Dim value As Object = record.Item(clmn)
@@ -595,83 +596,109 @@ Public Class frm_ToValidateForm
         Return i
     End Function
     Public Function removeDuplicatesOrcasTEMP(ByVal schemaName As String, ByVal tablename As String) As Integer
-        Dim correctRecordsDuplicates As String = "SELECT max(transit_id) "
-        Dim tblcolumns As String = ""
-        Dim str As String = "select column_name from information_schema.columns where table_Schema='" & schemaName & "' and table_name='" & tablename _
-        & "' AND column_name not in('rec_status', 'errflag', 'errdate', 'transit_id','download_date')"
-        Dim cmd As New SqlCommand(str, Me.clsGlobalVariable.HRS_Temp_DBCon)
-        Dim dt As New DataTable()
-        Dim da As New SqlDataAdapter(cmd)
-        dt.Clear()
-        da.Fill(dt)
+        'Dim correctRecordsDuplicates As String = "SELECT max(transit_id) "
+        'Dim tblcolumns As String = ""
+        'Dim str As String = "select column_name from information_schema.columns where table_Schema='" & schemaName & "' and table_name='" & tablename _
+        '& "' AND column_name not in('rec_status', 'errflag', 'errdate', 'transit_id','download_date')"
+        Dim cmd As New SqlCommand("[MHRS_SYS].[removeDuplicatesOrcasTEMP]", Me.clsGlobalVariable.HRS_Temp_DBCon)
+        cmd.CommandType = CommandType.StoredProcedure
 
-        'now validate against each validation check
-        Dim ignoreColumns As New List(Of String)
-        Dim s As String() = {"rec_status", "errflag", "errdate", "transit_id", "download_date"}
-        ignoreColumns.AddRange(s)
-        'ignore episodeid also for marriage
-        If tablename.ToLower.Trim = "marriage" Then
-            ignoreColumns.Add("episodeid")
-        End If
-        Dim col As String
-        For Each tablecol As DataRow In dt.Rows
-            col = tablecol.Item("column_name").ToString
-            If ignoreColumns.Contains(col.Trim.ToLower) Then Continue For
-            tblcolumns = tblcolumns & "[" & col & "],"
-        Next
-        correctRecordsDuplicates = correctRecordsDuplicates & " FROM " & schemaName.Trim & "." & tablename.Trim & " where rec_status not like '%X%' GROUP BY " & tblcolumns.TrimEnd(","c)
-        Dim updatesql As String = ""
-        updatesql = "UPDATE " & schemaName.Trim & "." & tablename.Trim & " SET rec_status='X'+ substring(rec_status,1,1) where rec_status not like '%X%' AND " _
-                          & "transit_id not in  (" & correctRecordsDuplicates.Trim & ")"
+        Dim outputIdParam As SqlParameter = New SqlParameter("@intoutput", SqlDbType.Int)
+        outputIdParam.Direction = ParameterDirection.Output
+        cmd.Parameters.Clear()
+        cmd.Parameters.AddWithValue("@schemaName", schemaName)
+        cmd.Parameters.AddWithValue("@tablename", tablename)
+        cmd.Parameters.Add(outputIdParam)
 
-        cmd.CommandText = updatesql
+
+        'Dim dt As New DataTable()
+        'Dim da As New SqlDataAdapter(cmd)
+        'dt.Clear()
+        'da.Fill(dt)
+
+        ''now validate against each validation check
+        'Dim ignoreColumns As New List(Of String)
+        'Dim s As String() = {"rec_status", "errflag", "errdate", "transit_id", "download_date"}
+        'ignoreColumns.AddRange(s)
+        ''ignore episodeid also for marriage
+        'If tablename.ToLower.Trim = "marriage" Then
+        '    ignoreColumns.Add("episodeid")
+        'End If
+        'Dim col As String
+        'For Each tablecol As DataRow In dt.Rows
+        '    col = tablecol.Item("column_name").ToString
+        '    If ignoreColumns.Contains(col.Trim.ToLower) Then Continue For
+        '    tblcolumns = tblcolumns & "[" & col & "],"
+        'Next
+        'correctRecordsDuplicates = correctRecordsDuplicates & " FROM " & schemaName.Trim & "." & tablename.Trim & " where rec_status not like '%X%' GROUP BY " & tblcolumns.TrimEnd(","c)
+        'Dim updatesql As String = ""
+        'updatesql = "UPDATE " & schemaName.Trim & "." & tablename.Trim & " SET rec_status='X'+ substring(rec_status,1,1) where rec_status not like '%X%' AND " _
+        '                  & "transit_id not in  (" & correctRecordsDuplicates.Trim & ")"
+
+        'cmd.CommandText = updatesql
         cmd.CommandTimeout = 0
         If cmd.Connection.State <> ConnectionState.Open Then cmd.Connection.Open()
-        Dim i As Integer = i + cmd.ExecuteNonQuery()
+        cmd.ExecuteNonQuery()
+        cmd.Connection.Close()
+        Dim i As Integer = outputIdParam.Value
         Return i
     End Function
 
     Public Function removeDuplicatesOrcasBothinTEMPnMain(ByVal schemaName As String, ByVal tablename As String) As Integer
-        Dim duplicatesTransit_ids As String = "SELECT max(transit_id) "
-        Dim tblcolumns As String = ""
-        Dim unionsql As String = ""
-        Dim str As String = "select column_name from information_schema.columns where table_Schema='" & schemaName & "' and table_name='" & tablename _
-        & "' AND column_name not in('rec_status', 'errflag', 'errdate', 'transit_id','download_date')"
-        Dim cmd As New SqlCommand(str, Me.clsGlobalVariable.HRS_Temp_DBCon)
-        Dim dt As New DataTable()
-        Dim da As New SqlDataAdapter(cmd)
-        dt.Clear()
-        da.Fill(dt)
+        'Dim duplicatesTransit_ids As String = "SELECT max(transit_id) "
+        'Dim tblcolumns As String = ""
+        'Dim unionsql As String = ""
+        'Dim str As String = "select column_name from information_schema.columns where table_Schema='" & schemaName & "' and table_name='" & tablename _
+        '& "' AND column_name not in('rec_status', 'errflag', 'errdate', 'transit_id','download_date')"
+        'Dim cmd As New SqlCommand(str, Me.clsGlobalVariable.HRS_Temp_DBCon)
 
-        'now validate against each validation check
-        Dim ignoreColumns As New List(Of String)
-        Dim s As String() = {"rec_status", "errflag", "errdate", "transit_id", "download_date"}
-        ignoreColumns.AddRange(s)
-        'ignore episodeid also for marriage
-        If tablename.ToLower.Trim = "marriage" Then
-            ignoreColumns.Add("episodeid")
-        End If
-        Dim col As String
-        For Each tablecol As DataRow In dt.Rows
-            col = tablecol.Item("column_name").ToString
-            If ignoreColumns.Contains(col.Trim.ToLower) Then Continue For
-            tblcolumns = tblcolumns & "[" & col & "],"
-        Next
-        unionsql = "(select " & tblcolumns.TrimEnd(","c) & ",transit_id FROM TEMP_DSSHRS." & schemaName.Trim & "." & tablename.Trim & " where rec_status not like '%X%'" _
-        & " union select " & tblcolumns.TrimEnd(","c) & ",-1 as transit_id FROM DSSHRS." & schemaName.Trim & "." & tablename.Trim & ")"
+        Dim cmd As New SqlCommand("[MHRS_SYS].[removeDuplicatesOrcasBothinTEMPnMain]", Me.clsGlobalVariable.HRS_Temp_DBCon)
+        cmd.CommandType = CommandType.StoredProcedure
 
-        duplicatesTransit_ids = "( " & duplicatesTransit_ids & " FROM " & unionsql & " as allrecords GROUP BY " & tblcolumns.TrimEnd(","c) _
-        & " having  max([transit_id])>0 and COUNT(*)>1 and MIN(transit_id)=-1 )"
+        Dim outputIdParam As SqlParameter = New SqlParameter("@intoutput", SqlDbType.Int)
+        outputIdParam.Direction = ParameterDirection.Output
+        cmd.Parameters.Clear()
+        cmd.Parameters.AddWithValue("@schemaName", schemaName)
+        cmd.Parameters.AddWithValue("@tablename", tablename)
+        cmd.Parameters.Add(outputIdParam)
+
+        'Dim dt As New DataTable()
+        'Dim da As New SqlDataAdapter(cmd)
+        'dt.Clear()
+        'da.Fill(dt)
+
+        ''now validate against each validation check
+        'Dim ignoreColumns As New List(Of String)
+        'Dim s As String() = {"rec_status", "errflag", "errdate", "transit_id", "download_date"}
+        'ignoreColumns.AddRange(s)
+        ''ignore episodeid also for marriage
+        'If tablename.ToLower.Trim = "marriage" Then
+        '    ignoreColumns.Add("episodeid")
+        'End If
+        'Dim col As String
+        'For Each tablecol As DataRow In dt.Rows
+        '    col = tablecol.Item("column_name").ToString
+        '    If ignoreColumns.Contains(col.Trim.ToLower) Then Continue For
+        '    tblcolumns = tblcolumns & "[" & col & "],"
+        'Next
+        'unionsql = "(select " & tblcolumns.TrimEnd(","c) & ",transit_id FROM TEMP_DSSHRS." & schemaName.Trim & "." & tablename.Trim & " where rec_status not like '%X%'" _
+        '& " union select " & tblcolumns.TrimEnd(","c) & ",-1 as transit_id FROM DSSHRS." & schemaName.Trim & "." & tablename.Trim & ")"
+
+        'duplicatesTransit_ids = "( " & duplicatesTransit_ids & " FROM " & unionsql & " as allrecords GROUP BY " & tblcolumns.TrimEnd(","c) _
+        '& " having  max([transit_id])>0 and COUNT(*)>1 and MIN(transit_id)=-1 )"
 
 
-        Dim updatesql As String = ""
-        updatesql = "UPDATE TEMP_DSSHRS." & schemaName.Trim & "." & tablename.Trim & " SET rec_status='X'+ substring(rec_status,1,1) where rec_status not like '%X%' AND " _
-                          & "transit_id in  (" & duplicatesTransit_ids.Trim & ")"
+        'Dim updatesql As String = ""
+        'updatesql = "UPDATE TEMP_DSSHRS." & schemaName.Trim & "." & tablename.Trim & " SET rec_status='X'+ substring(rec_status,1,1) where rec_status not like '%X%' AND " _
+        '                  & "transit_id in  (" & duplicatesTransit_ids.Trim & ")"
 
-        cmd.CommandText = updatesql
+        'cmd.CommandText = updatesql
         cmd.CommandTimeout = 0
         If cmd.Connection.State <> ConnectionState.Open Then cmd.Connection.Open()
-        Dim i As Integer = i + cmd.ExecuteNonQuery()
+        'Dim i As Integer = i + cmd.ExecuteNonQuery()
+        cmd.ExecuteNonQuery()
+        cmd.Connection.Close()
+        Dim i As Integer = outputIdParam.Value
         Return i
     End Function
     Public Function undoRecordsMarkdedFordeletion(ByVal schemaName As String, ByVal tablename As String) As Integer
@@ -721,6 +748,8 @@ Public Class frm_ToValidateForm
         Me.da.exec_nonquery("exec [TEMP_DSSHRS].[dbo].[generateMissingObservations] ")
         Me.da.exec_nonquery("exec [TEMP_DSSHRS].[dbo].[generateMissingObservationsMissinfObser] ")
         Me.da.exec_nonquery("exec [TEMP_DSSHRS].[dbo].[RemoveFakePrpgramGenObservations] ")
+        Me.da.exec_nonquery("exec [TEMP_DSSHRS].[dbo].[generateMissingObservDemolish] ")
+        Me.da.exec_nonquery("exec [TEMP_DSSHRS].[dbo].[deleteMovedAwayImmunize] ")
 
         Me.da.exec_nonquery("exec [TEMP_DSSHRS].[DSS].[Transfer_Updates_Membership_Inserts]")
         Me.da.exec_nonquery("exec [TEMP_DSSHRS].[DSS].[Transfer_Updates_Residency_Inserts]")
@@ -760,8 +789,9 @@ Public Class frm_ToValidateForm
         Me.da.exec_nonquery("exec [TEMP_DSSHRS].[dbo].[error_updateVillage] ")
     End Sub
     Private Sub doTransformData()
-        Me.SendMail("Validation program has started Running at " & Now().ToString & vbLf & vbLf & vbLf & " Courtesy of Validation Program" _
-        , "***NOTICE VALIDATION PROGRAM PROGRESS***", "d_KisumuDSSdu@kemricdc.org;d_KisumuDSSProg@kemricdc.org;d_KisumuDSSds@kemricdc.org")
+        Me.SendMail("KIBERA Validation program has started Running at " & Now().ToString & vbLf & vbLf & vbLf & " Courtesy of Validation Program" _
+        , "***NOTICE KIBERA VALIDATION PROGRAM PROGRESS***", "cooduor@kemricdc.org;skiplangat@kemricdc.org;gmasyongo@kemricdc.org;aouma@kemricdc.org;pogada@kemricdc.org;nagumba@kemricdc.org;")
+        ', "***NOTICE KIBERA VALIDATION PROGRAM PROGRESS***", "d_KisumuDSSProg@kemricdc.org;nairobi-gddd-data@kemricdc.org")
         Dim dt As DataTable
         Dim item As Table = Nothing
         Dim data_transfer As clsDataTransfer = clsDataTransfer.getObject
@@ -857,8 +887,8 @@ Public Class frm_ToValidateForm
             data_transfer.configureTrigger(datalevel.DSSHRS, True)
             data_transfer.configureTrigger(datalevel.TEMP_DSSHRS, True)
             BackgroundWorkerValidate.ReportProgress(Nothing, "program completed successfully")
-            Me.SendMail("Validation program completed successfully at " & Now().ToString & vbLf & vbLf & vbLf & " Courtesy of Validation Program" _
-        , "***NOTICE VALIDATION PROGRAM PROGRESS***", "d_KisumuDSSdu@kemricdc.org;d_KisumuDSSProg@kemricdc.org;d_KisumuDSSds@kemricdc.org")
+            Me.SendMail("KIBERA Validation program completed successfully at " & Now().ToString & vbLf & vbLf & vbLf & " Courtesy of Validation Program" _
+        , "***NOTICE KIBERA VALIDATION PROGRAM PROGRESS***", "d_KisumuDSSProg@kemrnickolicdc.org;nairobi-gddd-data@kemricdc.org")
             'MsgBox("program completed", MsgBoxStyle.Exclamation)
         Catch ex As Exception
 
@@ -1048,7 +1078,7 @@ Public Class frm_ToValidateForm
 
     End Sub
 
-    
+
 
     Private Sub BackgroundWorkerValidate_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorkerValidate.DoWork
         If autorun Then
@@ -1151,9 +1181,9 @@ Public Class frm_ToValidateForm
         Me.mailpass = Me.getPass
         dacc.initializeServerAndDB()
         getTables()
-        Dim fm As New DgvFilterManager
+        'Dim fm As New DgvFilterManager
 
-        fm.DataGridView = dgr_results
+        'fm.DataGridView = dgr_results
 
         cmb_errorView.Text = "PENDING"
         Me.dacc.errorLogfilename = "autorunLog_" + Guid.NewGuid.ToString
@@ -1376,5 +1406,5 @@ Public Class frm_ToValidateForm
 
 
 
-    
+
 End Class
