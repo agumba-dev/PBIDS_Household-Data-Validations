@@ -2,7 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net9.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <StartupObject>WindowsApplication1.My.MyApplication</StartupObject>
+    <RootNamespace>DATA_validator</RootNamespace>
+    <AssemblyName>DATA_validator</AssemblyName>
+    <StartupObject>DATA_validator.Program</StartupObject>
     <MyType>WindowsForms</MyType>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>C:\Users\noela\Desktop\invincible\</PublishUrl>
@@ -23,8 +25,10 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
-    <AssemblyTitle>WindowsApplication1</AssemblyTitle>
-    <Product>WindowsApplication1</Product>
+    <GenerateManifests>false</GenerateManifests>
+    <SignManifests>false</SignManifests>
+    <AssemblyTitle>DATA_validator</AssemblyTitle>
+    <Product>PBIDS Household Data Validator</Product>
     <Copyright>Copyright ©  2010</Copyright>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
@@ -40,23 +44,9 @@
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022,42353,42354,42355</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>11D569A16E78BDEBE6A9306AFC432DA5DDBB370D</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>WindowsApplication1_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="HRS_Desktop.designer.vb" />
     <Compile Remove="HRS_Desktop.vb" />
-    <Compile Remove="InvincibleCodes\Presentation\clsfrmConfigureServer.designer.vb" />
-    <Compile Remove="InvincibleCodes\Presentation\clsfrmConfigureServer.vb" />
     <Compile Remove="InvincibleCodes\Presentation\Form1.Designer.vb" />
     <Compile Remove="InvincibleCodes\Presentation\Form1.vb" />
     <Compile Remove="InvincibleCodes\Presentation\frmSQLQueryWindow.Designer.vb" />
@@ -70,7 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Remove="HRS_Desktop.resx" />
-    <EmbeddedResource Remove="InvincibleCodes\Presentation\clsfrmConfigureServer.resx" />
     <EmbeddedResource Remove="InvincibleCodes\Presentation\Form1.resx" />
     <EmbeddedResource Remove="InvincibleCodes\Presentation\frmSQLQueryWindow.resx" />
     <EmbeddedResource Remove="InvincibleCodes\Presentation\frmValidationMgmt.resx" />
@@ -79,22 +68,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="DgvFilterPopup, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\..\necessary_dlls\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\..\necessary_dlls\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\..\necessary_dlls\Microsoft.SqlServer.Smo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SqlClrProvider, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\OneDrive\KEMRI\PROGRAMMING_CURRENT\HDSS SYSTEMS\necessary_dlls\Microsoft.SqlServer.SqlClrProvider.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\..\necessary_dlls\Microsoft.SqlServer.SqlEnum.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="System.Drawing" />
@@ -158,5 +131,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.8" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="172.52.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="9.0.8" />
   </ItemGroup>
 </Project>
